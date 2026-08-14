@@ -1,0 +1,21 @@
+{
+  "name": "analytics-board",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @analytics/web",
+    "build": "npm run build -w @analytics/web",
+    "start": "npm run start -w @analytics/web",
+    "lint": "npm run lint -w @analytics/web",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

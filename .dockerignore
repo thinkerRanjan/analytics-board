@@ -1,0 +1,13 @@
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.next
+**/node_modules
+npm-debug.log*
+README.md
+.env*
+!.env.example
+apps/web/.next
+**/.turbo
+dir-list.txt

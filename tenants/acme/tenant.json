@@ -1,0 +1,23 @@
+{
+  "id": "acme",
+  "name": "Acme Corp",
+  "auth": {
+    "allowedEmails": ["demo@analytics.local", "analyst@acme.com"],
+    "allowedDomains": ["acme.com"]
+  },
+  "bigquery": {
+    "projectId": "acme-ga4",
+    "dataset": "analytics_123456789",
+    "location": "US"
+  },
+  "dashboard": {
+    "title": "Acme Overview",
+    "defaultPreset": "7d",
+    "widgets": [
+      { "id": "kpi-sessions", "type": "kpi", "metric": "sessions", "label": "Sessions" },
+      { "id": "kpi-users", "type": "kpi", "metric": "users", "label": "Users" },
+      { "id": "trend-sessions", "type": "trend", "metric": "sessions" },
+      { "id": "sources", "type": "sources" }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "demo",
+  "name": "Demo Client",
+  "auth": {
+    "allowedEmails": ["demo@analytics.local"],
+    "allowedDomains": []
+  },
+  "bigquery": {
+    "projectId": "demo-project",
+    "dataset": "analytics_demo",
+    "location": "US"
+  },
+  "dashboard": {
+    "title": "Demo Overview",
+    "defaultPreset": "28d",
+    "widgets": [
+      { "id": "kpi-sessions", "type": "kpi", "metric": "sessions", "label": "Sessions" },
+      { "id": "kpi-users", "type": "kpi", "metric": "users", "label": "Users" },
+      { "id": "kpi-pageviews", "type": "kpi", "metric": "pageviews", "label": "Pageviews" },
+      { "id": "kpi-conversions", "type": "kpi", "metric": "conversions", "label": "Conversions" },
+      { "id": "trend-sessions", "type": "trend", "metric": "sessions" },
+      { "id": "sources", "type": "sources" },
+      { "id": "pages", "type": "pages" }
+    ]
+  }
+}

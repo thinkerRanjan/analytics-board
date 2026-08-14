@@ -1,0 +1,20 @@
+{
+  "name": "@analytics/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@analytics/shared": "*",
+    "@google-cloud/bigquery": "^8.3.1",
+    "date-fns": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
+  }
+}
