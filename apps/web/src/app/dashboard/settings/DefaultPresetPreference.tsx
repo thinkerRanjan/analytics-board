@@ -1,11 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import {
   getStoredDefaultPreset,
   setStoredDefaultPreset,
   type StoredPreset,
 } from "@analytics/ui";
+
+const listeners = new Set<() => void>();
+
+function subscribe(onChange: () => void) {
+  listeners.add(onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+/** The server has no localStorage, so it always falls back to the tenant default. */
+const getServerSnapshot = () => null;
 
 const PRESETS: { id: StoredPreset; label: string }[] = [
   { id: "7d", label: "7 days" },
@@ -20,19 +34,21 @@ type DefaultPresetPreferenceProps = {
 export function DefaultPresetPreference({
   tenantDefault,
 }: DefaultPresetPreferenceProps) {
-  const [value, setValue] = useState<StoredPreset>(tenantDefault);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    setValue(getStoredDefaultPreset() ?? tenantDefault);
-  }, [tenantDefault]);
+  const stored = useSyncExternalStore(
+    subscribe,
+    getStoredDefaultPreset,
+    getServerSnapshot,
+  );
+  const value = stored ?? tenantDefault;
 
-  const onChange = (preset: StoredPreset) => {
-    setValue(preset);
+  const onChange = useCallback((preset: StoredPreset) => {
     setStoredDefaultPreset(preset);
+    for (const listener of listeners) listener();
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2000);
-  };
+  }, []);
 
   return (
     <div className="space-y-3">

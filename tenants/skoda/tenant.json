@@ -63,24 +63,49 @@
         "title": "User Engagement",
         "description": "Depth of visit, returning users, and interaction quality.",
         "kind": "metrics",
-        "widgets": [],
-        "plannedSections": [
+        "widgets": [
           {
-            "id": "engaged-sessions",
-            "title": "Engaged sessions",
-            "description": "Sessions with meaningful interaction time."
+            "id": "trend-active-users",
+            "type": "trend",
+            "metric": "activeUsers",
+            "title": "Active users",
+            "subtitle": "Users with at least one engaged session",
+            "span": "half"
           },
           {
-            "id": "scroll-depth",
-            "title": "Scroll depth",
-            "description": "How far users scroll on key templates."
+            "id": "trend-new-users",
+            "type": "trend",
+            "metric": "newUsers",
+            "title": "New users",
+            "subtitle": "First-time visitors each day",
+            "span": "half"
           },
           {
-            "id": "returning-users",
-            "title": "Returning users trend",
-            "description": "New vs returning users over time."
+            "id": "trend-session-time",
+            "type": "trend",
+            "metric": "avgSessionSeconds",
+            "title": "Average session time",
+            "subtitle": "Mean engagement time per session",
+            "span": "full"
+          },
+          {
+            "id": "event-configurator-started",
+            "type": "eventTrend",
+            "eventName": "configurator_started",
+            "title": "Configurator started",
+            "subtitle": "Times the configurator was launched",
+            "span": "half"
+          },
+          {
+            "id": "event-ai-chatbot-open",
+            "type": "eventTrend",
+            "eventName": "ai_chatbot_open_clicked",
+            "title": "AI chatbot opened",
+            "subtitle": "Times the chatbot was opened",
+            "span": "half"
           }
-        ]
+        ],
+        "plannedSections": []
       },
       {
         "id": "top-products",
@@ -133,24 +158,77 @@
         "title": "Audience & Demographics",
         "description": "Geography, devices, and audience composition.",
         "kind": "metrics",
-        "widgets": [],
-        "plannedSections": [
+        "widgets": [
           {
-            "id": "geo",
-            "title": "Geography",
-            "description": "Country, region, and city breakdown."
+            "id": "breakdown-device-category",
+            "type": "breakdown",
+            "dimension": "deviceCategory",
+            "chart": "donut",
+            "title": "Device category",
+            "subtitle": "Mobile, desktop, and tablet split",
+            "span": "half"
           },
           {
-            "id": "devices",
-            "title": "Devices",
-            "description": "Mobile, desktop, and tablet split."
-          },
-          {
-            "id": "new-vs-returning",
+            "id": "breakdown-user-type",
+            "type": "breakdown",
+            "dimension": "userType",
+            "chart": "donut",
             "title": "New vs returning",
-            "description": "Audience loyalty and acquisition mix."
+            "subtitle": "First-time visitors against repeat users",
+            "span": "half"
+          },
+          {
+            "id": "breakdown-city",
+            "type": "breakdown",
+            "dimension": "city",
+            "chart": "bar",
+            "title": "Top cities",
+            "subtitle": "Where users are browsing from",
+            "limit": 10,
+            "span": "half"
+          },
+          {
+            "id": "breakdown-region",
+            "type": "breakdown",
+            "dimension": "region",
+            "chart": "bar",
+            "title": "Top states and regions",
+            "subtitle": "Regional demand distribution",
+            "limit": 10,
+            "span": "half"
+          },
+          {
+            "id": "breakdown-country",
+            "type": "breakdown",
+            "dimension": "country",
+            "chart": "bar",
+            "title": "Top countries",
+            "subtitle": "International reach",
+            "limit": 8,
+            "span": "half"
+          },
+          {
+            "id": "breakdown-os",
+            "type": "breakdown",
+            "dimension": "operatingSystem",
+            "chart": "bar",
+            "title": "Operating system",
+            "subtitle": "Platforms users browse on",
+            "limit": 6,
+            "span": "half"
+          },
+          {
+            "id": "breakdown-browser",
+            "type": "breakdown",
+            "dimension": "browser",
+            "chart": "bar",
+            "title": "Browsers",
+            "subtitle": "Rendering environments to test against",
+            "limit": 8,
+            "span": "full"
           }
-        ]
+        ],
+        "plannedSections": []
       },
       {
         "id": "acquisition",

@@ -1,14 +1,14 @@
-import type { MetricId } from "@analytics/shared";
+import type { CoreMetricId } from "@analytics/shared";
 
 type KpiCardProps = {
   label: string;
   value: number;
-  metric?: MetricId;
+  metric?: CoreMetricId;
   spark?: number[];
   format?: "number" | "compact";
 };
 
-const ICONS: Record<MetricId, React.ReactNode> = {
+const ICONS: Record<CoreMetricId, React.ReactNode> = {
   sessions: (
     <path
       strokeLinecap="round"
@@ -44,7 +44,7 @@ const ICONS: Record<MetricId, React.ReactNode> = {
   ),
 };
 
-const TINTS: Record<MetricId, { bg: string; fg: string }> = {
+const TINTS: Record<CoreMetricId, { bg: string; fg: string }> = {
   sessions: { bg: "var(--accent-soft)", fg: "var(--accent)" },
   users: { bg: "rgba(124, 58, 237, 0.14)", fg: "#8b5cf6" },
   pageviews: { bg: "rgba(8, 145, 178, 0.14)", fg: "#06b6d4" },

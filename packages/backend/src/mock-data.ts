@@ -1,5 +1,10 @@
 import { eachDayOfInterval, parseISO, format } from "date-fns";
-import type { OverviewMetrics } from "@analytics/shared";
+import type {
+  AudienceBreakdowns,
+  AudienceDimension,
+  EngagementPoint,
+  OverviewMetrics,
+} from "@analytics/shared";
 
 function hash(str: string): number {
   let h = 0;
@@ -7,6 +12,71 @@ function hash(str: string): number {
     h = (h * 31 + str.charCodeAt(i)) >>> 0;
   }
   return h;
+}
+
+export function getMockEngagement(
+  tenantId: string,
+  start: string,
+  end: string,
+  eventNames: string[] = [],
+): EngagementPoint[] {
+  const days = eachDayOfInterval({
+    start: parseISO(start),
+    end: parseISO(end),
+  });
+
+  return days.map((day) => {
+    const date = format(day, "yyyy-MM-dd");
+    const seed = hash(`${tenantId}:${date}`);
+    const activeUsers = 110 + (seed % 90);
+
+    return {
+      date,
+      activeUsers,
+      newUsers: Math.round(activeUsers * (0.7 + (seed % 20) / 100)),
+      avgSessionSeconds: 90 + (seed % 150),
+      events: Object.fromEntries(
+        eventNames.map((name) => [
+          name,
+          20 + (hash(`${name}:${date}`) % 200),
+        ]),
+      ),
+    };
+  });
+}
+
+const MOCK_DIMENSION_LABELS: Record<AudienceDimension, string[]> = {
+  country: ["India", "United States", "United Arab Emirates", "Germany", "United Kingdom"],
+  region: ["Maharashtra", "Karnataka", "Tamil Nadu", "Gujarat", "Telangana"],
+  city: ["Bengaluru", "Mumbai", "Chennai", "Delhi", "Hyderabad", "Pune"],
+  deviceCategory: ["mobile", "desktop", "tablet"],
+  operatingSystem: ["Android", "Windows", "iOS", "Macintosh", "Linux"],
+  browser: ["Chrome", "Safari", "Edge", "Firefox", "Opera"],
+  language: ["en-in", "en-us", "en-gb", "en-ca"],
+  userType: ["New", "Returning"],
+};
+
+export function getMockBreakdowns(
+  tenantId: string,
+  start: string,
+  end: string,
+  dimensions: AudienceDimension[],
+): AudienceBreakdowns {
+  const seed = hash(`${tenantId}:${start}:${end}`);
+
+  return Object.fromEntries(
+    dimensions.map((dimension) => {
+      const labels = MOCK_DIMENSION_LABELS[dimension];
+      const rows = labels.map((label, index) => ({
+        label,
+        value: Math.round(
+          (4000 + (hash(`${dimension}:${label}`) % 2000)) / (index + 1.4) +
+            (seed % 50),
+        ),
+      }));
+      return [dimension, rows.sort((a, b) => b.value - a.value)];
+    }),
+  );
 }
 
 export function getMockOverview(

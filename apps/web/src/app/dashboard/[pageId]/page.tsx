@@ -56,7 +56,6 @@ export default async function DashboardPageById({
     error = err instanceof Error ? err.message : "Failed to load page data";
   }
 
-  const dateLabel = `${range.start} → ${range.end}`;
   const mock =
     result?.kind === "metrics" ? result.data.mock : false;
 
@@ -65,7 +64,6 @@ export default async function DashboardPageById({
       <DashboardPageHeader
         title={page.title}
         description={page.description}
-        dateLabel={dateLabel}
         mock={mock}
       />
 

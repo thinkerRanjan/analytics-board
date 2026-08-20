@@ -438,8 +438,11 @@ body > * {
 
   /* ---------- Hover disclosure ---------- */
 
+  /* fit-content keeps the hover target tight to the title while staying a
+     block box, so siblings never flow inline beside it. */
   .reveal-group {
-    display: inline-block;
+    display: block;
+    width: fit-content;
     border-radius: 0.5rem;
   }
 

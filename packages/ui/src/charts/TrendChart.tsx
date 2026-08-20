@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import {
   Area,
   AreaChart,
@@ -8,20 +9,17 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { MetricId, TrendPoint } from "@analytics/shared";
+import type { TrendPoint } from "@analytics/shared";
+import { formatDuration } from "@analytics/shared";
 import { useChartDimensions } from "./useChartDimensions";
 import { useChartTheme } from "./useChartTheme";
 
 type TrendChartProps = {
   data: TrendPoint[];
-  metric?: MetricId;
-};
-
-const LABELS: Record<MetricId, string> = {
-  sessions: "Sessions",
-  users: "Users",
-  pageviews: "Pageviews",
-  conversions: "Conversions",
+  /** Supports dot paths, e.g. `events.configurator_started`. */
+  dataKey?: string;
+  label?: string;
+  format?: "number" | "duration";
 };
 
 const compact = new Intl.NumberFormat("en", {
@@ -29,9 +27,23 @@ const compact = new Intl.NumberFormat("en", {
   maximumFractionDigits: 1,
 });
 
-export function TrendChart({ data, metric = "sessions" }: TrendChartProps) {
+export function TrendChart({
+  data,
+  dataKey = "sessions",
+  label = "Sessions",
+  format = "number",
+}: TrendChartProps) {
   const { containerRef, width, height, ready } = useChartDimensions();
   const theme = useChartTheme();
+
+  // Several trend charts share a page, so the gradient ids have to be unique
+  // or every chart resolves to whichever definition rendered first.
+  const rawId = useId().replace(/:/g, "");
+  const fillId = `trendFill-${rawId}`;
+  const strokeId = `trendStroke-${rawId}`;
+
+  const formatValue = (value: number) =>
+    format === "duration" ? formatDuration(value) : compact.format(value);
 
   return (
     <div ref={containerRef} className="h-72 w-full">
@@ -43,12 +55,12 @@ export function TrendChart({ data, metric = "sessions" }: TrendChartProps) {
           margin={{ top: 10, right: 8, left: 0, bottom: 0 }}
         >
           <defs>
-            <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={theme.accent} stopOpacity={0.45} />
               <stop offset="55%" stopColor={theme.accentEnd} stopOpacity={0.18} />
               <stop offset="100%" stopColor={theme.accentEnd} stopOpacity={0} />
             </linearGradient>
-            <linearGradient id="trendStroke" x1="0" y1="0" x2="1" y2="0">
+            <linearGradient id={strokeId} x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor={theme.accent} />
               <stop offset="100%" stopColor={theme.accentEnd} />
             </linearGradient>
@@ -68,13 +80,14 @@ export function TrendChart({ data, metric = "sessions" }: TrendChartProps) {
           />
           <YAxis
             tick={{ fontSize: 11, fill: theme.axis }}
-            width={48}
+            width={format === "duration" ? 62 : 48}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(value: number) => compact.format(value)}
+            tickFormatter={formatValue}
           />
           <Tooltip
             cursor={{ stroke: theme.accent, strokeWidth: 1, strokeDasharray: "4 4" }}
+            formatter={(value) => [formatValue(Number(value) || 0), label]}
             contentStyle={{
               borderRadius: 10,
               background: theme.tooltip.background,
@@ -88,11 +101,12 @@ export function TrendChart({ data, metric = "sessions" }: TrendChartProps) {
           />
           <Area
             type="monotone"
-            dataKey={metric}
-            name={LABELS[metric]}
-            stroke="url(#trendStroke)"
-            fill="url(#trendFill)"
+            dataKey={dataKey}
+            name={label}
+            stroke={`url(#${strokeId})`}
+            fill={`url(#${fillId})`}
             strokeWidth={2.5}
+            connectNulls
             activeDot={{
               r: 4,
               fill: theme.accent,

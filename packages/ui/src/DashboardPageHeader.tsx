@@ -1,14 +1,12 @@
 type DashboardPageHeaderProps = {
   title: string;
   description?: string;
-  dateLabel?: string;
   mock?: boolean;
 };
 
 export function DashboardPageHeader({
   title,
   description,
-  dateLabel,
   mock,
 }: DashboardPageHeaderProps) {
   return (
@@ -45,23 +43,6 @@ export function DashboardPageHeader({
           </div>
         ) : null}
       </div>
-
-      {dateLabel ? (
-        <p className="mt-2 inline-flex items-center gap-2 rounded-md bg-surface-muted px-2.5 py-1 text-xs font-medium text-foreground-soft">
-          <svg
-            aria-hidden
-            className="h-3.5 w-3.5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.8}
-          >
-            <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
-            <path strokeLinecap="round" d="M8 3.5v3M16 3.5v3M3.5 10h17" />
-          </svg>
-          {dateLabel}
-        </p>
-      ) : null}
     </div>
   );
 }

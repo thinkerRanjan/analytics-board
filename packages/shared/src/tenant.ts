@@ -1,24 +1,84 @@
 import { z } from "zod";
 
-export const MetricIdSchema = z.enum([
+/** Metrics that are totalled into `OverviewMetrics.kpis` and can back a KPI card. */
+export const CoreMetricIdSchema = z.enum([
   "sessions",
   "users",
   "pageviews",
   "conversions",
 ]);
+export type CoreMetricId = z.infer<typeof CoreMetricIdSchema>;
+
+/**
+ * Metrics that can be plotted as a daily series. Engagement metrics are
+ * excluded from `CoreMetricId` because they cannot be summed across days into
+ * a single total (active users would double count, session time is an average).
+ */
+export const MetricIdSchema = z.enum([
+  ...CoreMetricIdSchema.options,
+  "activeUsers",
+  "newUsers",
+  "avgSessionSeconds",
+]);
 export type MetricId = z.infer<typeof MetricIdSchema>;
+
+export const ENGAGEMENT_METRIC_IDS = [
+  "activeUsers",
+  "newUsers",
+  "avgSessionSeconds",
+] as const satisfies readonly MetricId[];
+
+export function isEngagementMetric(metric: MetricId): boolean {
+  return (ENGAGEMENT_METRIC_IDS as readonly string[]).includes(metric);
+}
+
+/** Dimensions the audience page can group users by. */
+export const AudienceDimensionSchema = z.enum([
+  "country",
+  "region",
+  "city",
+  "deviceCategory",
+  "operatingSystem",
+  "browser",
+  "language",
+  "userType",
+]);
+export type AudienceDimension = z.infer<typeof AudienceDimensionSchema>;
+
+const SpanSchema = z.enum(["half", "full"]).default("full");
 
 export const WidgetSchema = z.discriminatedUnion("type", [
   z.object({
     id: z.string().min(1),
     type: z.literal("kpi"),
-    metric: MetricIdSchema,
+    metric: CoreMetricIdSchema,
     label: z.string().min(1),
   }),
   z.object({
     id: z.string().min(1),
     type: z.literal("trend"),
     metric: MetricIdSchema,
+    title: z.string().optional(),
+    subtitle: z.string().optional(),
+    span: SpanSchema,
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal("eventTrend"),
+    eventName: z.string().min(1),
+    title: z.string().min(1),
+    subtitle: z.string().optional(),
+    span: SpanSchema,
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal("breakdown"),
+    dimension: AudienceDimensionSchema,
+    chart: z.enum(["bar", "donut"]).default("bar"),
+    title: z.string().min(1),
+    subtitle: z.string().optional(),
+    limit: z.number().int().positive().max(25).default(10),
+    span: SpanSchema,
   }),
   z.object({
     id: z.string().min(1),
@@ -30,6 +90,33 @@ export const WidgetSchema = z.discriminatedUnion("type", [
   }),
 ]);
 export type Widget = z.infer<typeof WidgetSchema>;
+
+/** GA4 event names a page needs daily counts for, derived from its widgets. */
+export function getPageEventNames(page: DashboardPage): string[] {
+  if (page.kind !== "metrics") return [];
+  const names = page.widgets
+    .filter((widget) => widget.type === "eventTrend")
+    .map((widget) => widget.eventName);
+  return [...new Set(names)];
+}
+
+export function pageNeedsEngagementMetrics(page: DashboardPage): boolean {
+  if (page.kind !== "metrics") return false;
+  return page.widgets.some(
+    (widget) =>
+      widget.type === "eventTrend" ||
+      (widget.type === "trend" && isEngagementMetric(widget.metric)),
+  );
+}
+
+/** Audience dimensions a page needs breakdowns for, derived from its widgets. */
+export function getPageDimensions(page: DashboardPage): AudienceDimension[] {
+  if (page.kind !== "metrics") return [];
+  const dimensions = page.widgets
+    .filter((widget) => widget.type === "breakdown")
+    .map((widget) => widget.dimension);
+  return [...new Set(dimensions)];
+}
 
 export const PlannedSectionSchema = z.object({
   id: z.string().min(1),
