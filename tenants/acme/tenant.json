@@ -11,13 +11,28 @@
     "location": "US"
   },
   "dashboard": {
-    "title": "Acme Overview",
+    "title": "Acme Analytics",
+    "defaultPageId": "overview",
     "defaultPreset": "7d",
-    "widgets": [
-      { "id": "kpi-sessions", "type": "kpi", "metric": "sessions", "label": "Sessions" },
-      { "id": "kpi-users", "type": "kpi", "metric": "users", "label": "Users" },
-      { "id": "trend-sessions", "type": "trend", "metric": "sessions" },
-      { "id": "sources", "type": "sources" }
+    "pages": [
+      {
+        "id": "overview",
+        "title": "Overview",
+        "kind": "metrics",
+        "widgets": [
+          { "id": "kpi-sessions", "type": "kpi", "metric": "sessions", "label": "Sessions" },
+          { "id": "kpi-users", "type": "kpi", "metric": "users", "label": "Users" },
+          { "id": "trend-sessions", "type": "trend", "metric": "sessions" }
+        ],
+        "plannedSections": []
+      },
+      {
+        "id": "acquisition",
+        "title": "Acquisition & Traffic",
+        "kind": "metrics",
+        "widgets": [{ "id": "sources", "type": "sources" }],
+        "plannedSections": []
+      }
     ]
   }
 }

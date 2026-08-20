@@ -1,11 +1,17 @@
 import type { TenantConfig } from "@analytics/shared";
 import { getTenant, listTenants } from "./registry";
 
+function normalizeEmail(email: string | null | undefined): string | null {
+  if (!email) return null;
+  return email.trim().toLowerCase();
+}
+
 export function emailMatchesTenant(
   email: string,
   tenant: TenantConfig,
 ): boolean {
-  const normalized = email.toLowerCase();
+  const normalized = normalizeEmail(email);
+  if (!normalized) return false;
 
   if (normalized === "demo@analytics.local" && tenant.id === "demo") {
     return true;
@@ -13,7 +19,7 @@ export function emailMatchesTenant(
 
   const { allowedEmails, allowedDomains } = tenant.auth;
 
-  if (allowedEmails.some((e) => e.toLowerCase() === normalized)) {
+  if (allowedEmails.some((e) => normalizeEmail(e) === normalized)) {
     return true;
   }
 
@@ -21,15 +27,16 @@ export function emailMatchesTenant(
     ? normalized.split("@")[1]
     : "";
 
-  return allowedDomains.some((d) => {
-    const clean = d.replace(/^@/, "").toLowerCase();
-    return domain === clean;
-  });
+  return allowedDomains
+    .map((d) => d.replace(/^@/, "").trim().toLowerCase())
+    .filter(Boolean)
+    .some((clean) => domain === clean);
 }
 
 export function resolveTenantsForEmail(email: string | null | undefined): TenantConfig[] {
-  if (!email) return [];
-  return listTenants().filter((tenant) => emailMatchesTenant(email, tenant));
+  const normalized = normalizeEmail(email ?? undefined);
+  if (!normalized) return [];
+  return listTenants().filter((tenant) => emailMatchesTenant(normalized, tenant));
 }
 
 export function assertTenantAccess(
@@ -45,5 +52,7 @@ export function assertTenantAccess(
 
 export function pickDefaultTenantId(tenants: TenantConfig[]): string | null {
   if (tenants.length === 0) return null;
+  const skoda = tenants.find((t) => t.id === "skoda");
+  if (skoda) return skoda.id;
   return tenants[0].id;
 }

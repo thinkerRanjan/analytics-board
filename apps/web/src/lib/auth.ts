@@ -34,6 +34,15 @@ if (process.env.USE_MOCK_DATA === "true") {
   );
 }
 
+function resolveEmailFromAuth(
+  user?: { email?: string | null } | null,
+  profile?: { email?: string | null } | null,
+  tokenEmail?: string | null,
+): string | null {
+  const email = user?.email ?? profile?.email ?? tokenEmail ?? null;
+  return email?.trim().toLowerCase() ?? null;
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
   pages: {
@@ -41,15 +50,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/login",
   },
   callbacks: {
-    async signIn({ user }) {
-      const tenants = resolveTenantsForEmail(user.email);
+    async signIn({ user, profile }) {
+      const email = resolveEmailFromAuth(user, profile);
+      const tenants = resolveTenantsForEmail(email);
       return tenants.length > 0;
     },
-    async jwt({ token, user }) {
-      if (user?.email) {
-        const tenants = resolveTenantsForEmail(user.email);
-        token.email = user.email;
-        token.name = user.name;
+    async jwt({ token, user, profile }) {
+      const email = resolveEmailFromAuth(user, profile, token.email as string);
+      if (email) {
+        const tenants = resolveTenantsForEmail(email);
+        token.email = email;
+        token.name = user?.name ?? token.name;
         token.tenantIds = tenants.map((t) => t.id);
         token.tenantId = pickDefaultTenantId(tenants);
       }

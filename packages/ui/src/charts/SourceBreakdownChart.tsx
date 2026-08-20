@@ -3,50 +3,89 @@
 import {
   Bar,
   BarChart,
+  Cell,
   CartesianGrid,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 import type { SourceRow } from "@analytics/shared";
+import { useChartDimensions } from "./useChartDimensions";
+import { useChartTheme } from "./useChartTheme";
 
 type SourceBreakdownChartProps = {
   data: SourceRow[];
 };
 
+const compact = new Intl.NumberFormat("en", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
 export function SourceBreakdownChart({ data }: SourceBreakdownChartProps) {
+  const { containerRef, width, height, ready } = useChartDimensions();
+  const theme = useChartTheme();
+
   const chartData = data.map((row) => ({
     label: `${row.source} / ${row.medium}`,
     sessions: row.sessions,
   }));
 
   return (
-    <div className="h-72 w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div ref={containerRef} className="h-72 w-full">
+      {ready ? (
         <BarChart
+          width={width}
+          height={height}
           data={chartData}
           layout="vertical"
-          margin={{ top: 8, right: 16, left: 8, bottom: 0 }}
+          margin={{ top: 4, right: 16, left: 8, bottom: 0 }}
+          barCategoryGap="28%"
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
-          <XAxis type="number" tick={{ fontSize: 11, fill: "#64748b" }} />
+          <CartesianGrid
+            strokeDasharray="4 6"
+            stroke={theme.grid}
+            horizontal={false}
+          />
+          <XAxis
+            type="number"
+            tick={{ fontSize: 11, fill: theme.axis }}
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={(value: number) => compact.format(value)}
+          />
           <YAxis
             type="category"
             dataKey="label"
-            width={140}
-            tick={{ fontSize: 11, fill: "#64748b" }}
+            width={150}
+            tick={{ fontSize: 11, fill: theme.axis }}
+            axisLine={false}
+            tickLine={false}
           />
           <Tooltip
+            cursor={{ fill: theme.grid, opacity: 0.35 }}
             contentStyle={{
-              borderRadius: 8,
-              borderColor: "#e2e8f0",
+              borderRadius: 10,
+              background: theme.tooltip.background,
+              border: `1px solid ${theme.tooltip.border}`,
+              color: theme.tooltip.color,
               fontSize: 12,
             }}
+            labelStyle={{ color: theme.axis, marginBottom: 4 }}
+            itemStyle={{ color: theme.tooltip.color }}
           />
-          <Bar dataKey="sessions" name="Sessions" fill="#0e7490" radius={[0, 4, 4, 0]} />
+          <Bar dataKey="sessions" name="Sessions" radius={[0, 6, 6, 0]}>
+            {chartData.map((row, index) => (
+              <Cell
+                key={row.label}
+                fill={theme.series[index % theme.series.length]}
+              />
+            ))}
+          </Bar>
         </BarChart>
-      </ResponsiveContainer>
+      ) : (
+        <div className="skeleton h-full w-full animate-pulse" aria-hidden />
+      )}
     </div>
   );
 }

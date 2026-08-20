@@ -30,8 +30,12 @@ function resolveTenantsRoot(): string {
 
 let cache: Map<string, TenantConfig> | null = null;
 
+function shouldUseTenantCache(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
 export function loadTenants(): Map<string, TenantConfig> {
-  if (cache) return cache;
+  if (shouldUseTenantCache() && cache) return cache;
 
   const root = resolveTenantsRoot();
   const map = new Map<string, TenantConfig>();
@@ -55,7 +59,9 @@ export function loadTenants(): Map<string, TenantConfig> {
     throw new Error(`No tenant configs found under ${root}`);
   }
 
-  cache = map;
+  if (shouldUseTenantCache()) {
+    cache = map;
+  }
   return map;
 }
 

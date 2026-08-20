@@ -1,41 +1,193 @@
 {
   "id": "skoda",
-  "name": "Skoda Client",
+  "name": "Skoda",
   "auth": {
-    "allowedEmails": ["rohit@pragorlabs.com"],
-    "allowedDomains": [""]
+    "allowedEmails": [
+      "rohit@pragorlabs.com",
+      "Ranjan.Rohit3@gmail.com",
+      "ranjan.rohit3@gmail.com",
+      "accounts@biup.ai"
+    ],
+    "allowedDomains": ["pragorlabs.com", "biup.ai"]
   },
   "bigquery": {
     "projectId": "skoda-analytics-448506",
     "dataset": "analytics_470547739",
-    "location": "US"
+    "location": "asia-south2"
   },
   "dashboard": {
-    "title": "Demo Overview",
+    "title": "Skoda Analytics",
+    "defaultPageId": "overview",
     "defaultPreset": "28d",
-    "widgets": [
+    "pages": [
       {
-        "id": "kpi-sessions",
-        "type": "kpi",
-        "metric": "sessions",
-        "label": "Sessions"
+        "id": "overview",
+        "title": "Overview",
+        "description": "Executive snapshot of site health and traffic trends.",
+        "kind": "metrics",
+        "widgets": [
+          {
+            "id": "kpi-sessions",
+            "type": "kpi",
+            "metric": "sessions",
+            "label": "Sessions"
+          },
+          {
+            "id": "kpi-users",
+            "type": "kpi",
+            "metric": "users",
+            "label": "Users"
+          },
+          {
+            "id": "kpi-pageviews",
+            "type": "kpi",
+            "metric": "pageviews",
+            "label": "Pageviews"
+          },
+          {
+            "id": "kpi-conversions",
+            "type": "kpi",
+            "metric": "conversions",
+            "label": "Conversions"
+          },
+          {
+            "id": "trend-sessions",
+            "type": "trend",
+            "metric": "sessions"
+          }
+        ],
+        "plannedSections": []
       },
-      { "id": "kpi-users", "type": "kpi", "metric": "users", "label": "Users" },
       {
-        "id": "kpi-pageviews",
-        "type": "kpi",
-        "metric": "pageviews",
-        "label": "Pageviews"
+        "id": "engagement",
+        "title": "User Engagement",
+        "description": "Depth of visit, returning users, and interaction quality.",
+        "kind": "metrics",
+        "widgets": [],
+        "plannedSections": [
+          {
+            "id": "engaged-sessions",
+            "title": "Engaged sessions",
+            "description": "Sessions with meaningful interaction time."
+          },
+          {
+            "id": "scroll-depth",
+            "title": "Scroll depth",
+            "description": "How far users scroll on key templates."
+          },
+          {
+            "id": "returning-users",
+            "title": "Returning users trend",
+            "description": "New vs returning users over time."
+          }
+        ]
       },
       {
-        "id": "kpi-conversions",
-        "type": "kpi",
-        "metric": "conversions",
-        "label": "Conversions"
+        "id": "top-products",
+        "title": "Top Product Overview",
+        "description": "Ranked models and products by traffic and interest.",
+        "kind": "metrics",
+        "widgets": [],
+        "plannedSections": [
+          {
+            "id": "model-ranking",
+            "title": "Model ranking table",
+            "description": "Top models by sessions and pageviews."
+          },
+          {
+            "id": "share-of-traffic",
+            "title": "Share of traffic",
+            "description": "Traffic split across product lines."
+          }
+        ]
       },
-      { "id": "trend-sessions", "type": "trend", "metric": "sessions" },
-      { "id": "sources", "type": "sources" },
-      { "id": "pages", "type": "pages" }
+      {
+        "id": "product-pages",
+        "title": "Product Pages",
+        "description": "Performance of individual model landing pages.",
+        "kind": "metrics",
+        "widgets": [{ "id": "pages", "type": "pages" }],
+        "plannedSections": []
+      },
+      {
+        "id": "product-variants",
+        "title": "Product Variant Pages",
+        "description": "Trim, variant, and configurator page analytics.",
+        "kind": "metrics",
+        "widgets": [],
+        "plannedSections": [
+          {
+            "id": "variant-paths",
+            "title": "Variant page paths",
+            "description": "Traffic to trim and configuration pages."
+          },
+          {
+            "id": "configurator-usage",
+            "title": "Configurator usage",
+            "description": "Engagement with build-and-price flows."
+          }
+        ]
+      },
+      {
+        "id": "audience",
+        "title": "Audience & Demographics",
+        "description": "Geography, devices, and audience composition.",
+        "kind": "metrics",
+        "widgets": [],
+        "plannedSections": [
+          {
+            "id": "geo",
+            "title": "Geography",
+            "description": "Country, region, and city breakdown."
+          },
+          {
+            "id": "devices",
+            "title": "Devices",
+            "description": "Mobile, desktop, and tablet split."
+          },
+          {
+            "id": "new-vs-returning",
+            "title": "New vs returning",
+            "description": "Audience loyalty and acquisition mix."
+          }
+        ]
+      },
+      {
+        "id": "acquisition",
+        "title": "Acquisition & Traffic",
+        "description": "Traffic sources, channels, and campaigns.",
+        "kind": "metrics",
+        "widgets": [{ "id": "sources", "type": "sources" }],
+        "plannedSections": []
+      },
+      {
+        "id": "commentary",
+        "title": "Qualitative Analytics Commentary",
+        "description": "Analyst notes and narrative context on performance.",
+        "kind": "narrative",
+        "sections": [
+          {
+            "id": "welcome",
+            "title": "Getting started",
+            "body": "Qualitative commentary for this reporting period will appear here. Add dated notes about campaigns, launches, or market context to complement the quantitative dashboards.",
+            "updatedAt": "2026-08-20"
+          }
+        ]
+      },
+      {
+        "id": "insights",
+        "title": "Inferences & Suggestions",
+        "description": "Actionable recommendations based on analytics trends.",
+        "kind": "narrative",
+        "sections": [
+          {
+            "id": "welcome",
+            "title": "Getting started",
+            "body": "Prioritized recommendations and suggested next steps will appear here once page-level metrics are configured.",
+            "updatedAt": "2026-08-20"
+          }
+        ]
+      }
     ]
   }
 }

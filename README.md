@@ -119,3 +119,7 @@ gcloud run deploy analytics-board \
 ```
 
 Tenant JSON is copied into the image. Adding a client requires a redeploy.
+
+## Client setup: Skoda (live GA4 + BigQuery)
+
+See **[docs/skoda-live-setup.md](docs/skoda-live-setup.md)** for the full Skoda integration checklist (GA4 link, service account, Google login, env vars).

@@ -16,19 +16,26 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const demoEnabled = process.env.USE_MOCK_DATA === "true";
 
   return (
-    <div className="flex min-h-full flex-1 items-center justify-center bg-slate-100 px-4">
-      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="text-sm font-semibold tracking-wide text-teal-800">
-          Analytics Board
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">Sign in</h1>
-        <p className="mt-2 text-sm text-slate-600">
+    <div className="flex min-h-full flex-1 items-center justify-center px-4 py-12">
+      <div className="surface-card w-full max-w-md p-8">
+        <div className="flex items-center gap-3">
+          <span className="shell-brand-mark">AB</span>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Analytics Board</p>
+            <p className="text-xs text-muted">GA4 · BigQuery</p>
+          </div>
+        </div>
+
+        <h1 className="mt-6 text-2xl font-semibold tracking-tight text-foreground">
+          Sign in
+        </h1>
+        <p className="mt-2 text-sm text-muted">
           Multi-tenant GA4 dashboards powered by BigQuery.
         </p>
 
         {error ? (
           <p
-            className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            className="mt-4 rounded-md border border-[color:var(--accent)] bg-[color:var(--accent-soft)] px-3 py-2 text-sm text-accent"
             role="alert"
           >
             {error === "AccessDenied"
@@ -52,10 +59,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 }
               }}
             >
-              <button
-                type="submit"
-                className="flex w-full items-center justify-center gap-2 rounded-md bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800"
-              >
+              <button type="submit" className="btn-accent w-full">
                 Continue with Google
               </button>
             </form>
@@ -75,17 +79,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 }
               }}
             >
-              <button
-                type="submit"
-                className="flex w-full items-center justify-center rounded-md border border-teal-700 bg-teal-50 px-4 py-2.5 text-sm font-medium text-teal-900 hover:bg-teal-100"
-              >
+              <button type="submit" className="btn-outline w-full">
                 Continue with demo data
               </button>
             </form>
           ) : null}
 
           {!googleEnabled && !demoEnabled ? (
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-muted">
               Configure <code className="text-xs">AUTH_GOOGLE_ID</code> and{" "}
               <code className="text-xs">AUTH_GOOGLE_SECRET</code>, or set{" "}
               <code className="text-xs">USE_MOCK_DATA=true</code> for demo login.

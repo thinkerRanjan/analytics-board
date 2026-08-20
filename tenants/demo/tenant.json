@@ -11,16 +11,52 @@
     "location": "US"
   },
   "dashboard": {
-    "title": "Demo Overview",
+    "title": "Demo Analytics",
+    "defaultPageId": "overview",
     "defaultPreset": "28d",
-    "widgets": [
-      { "id": "kpi-sessions", "type": "kpi", "metric": "sessions", "label": "Sessions" },
-      { "id": "kpi-users", "type": "kpi", "metric": "users", "label": "Users" },
-      { "id": "kpi-pageviews", "type": "kpi", "metric": "pageviews", "label": "Pageviews" },
-      { "id": "kpi-conversions", "type": "kpi", "metric": "conversions", "label": "Conversions" },
-      { "id": "trend-sessions", "type": "trend", "metric": "sessions" },
-      { "id": "sources", "type": "sources" },
-      { "id": "pages", "type": "pages" }
+    "pages": [
+      {
+        "id": "overview",
+        "title": "Overview",
+        "description": "Executive snapshot of site health and traffic trends.",
+        "kind": "metrics",
+        "widgets": [
+          { "id": "kpi-sessions", "type": "kpi", "metric": "sessions", "label": "Sessions" },
+          { "id": "kpi-users", "type": "kpi", "metric": "users", "label": "Users" },
+          { "id": "kpi-pageviews", "type": "kpi", "metric": "pageviews", "label": "Pageviews" },
+          { "id": "kpi-conversions", "type": "kpi", "metric": "conversions", "label": "Conversions" },
+          { "id": "trend-sessions", "type": "trend", "metric": "sessions" }
+        ],
+        "plannedSections": []
+      },
+      {
+        "id": "engagement",
+        "title": "User Engagement",
+        "kind": "metrics",
+        "widgets": [],
+        "plannedSections": [
+          { "id": "engaged-sessions", "title": "Engaged sessions" }
+        ]
+      },
+      {
+        "id": "acquisition",
+        "title": "Acquisition & Traffic",
+        "kind": "metrics",
+        "widgets": [{ "id": "sources", "type": "sources" }],
+        "plannedSections": []
+      },
+      {
+        "id": "commentary",
+        "title": "Qualitative Analytics Commentary",
+        "kind": "narrative",
+        "sections": []
+      },
+      {
+        "id": "insights",
+        "title": "Inferences & Suggestions",
+        "kind": "narrative",
+        "sections": []
+      }
     ]
   }
 }
