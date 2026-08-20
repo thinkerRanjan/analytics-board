@@ -9,6 +9,7 @@ export { SourceBreakdownChart } from "./charts/SourceBreakdownChart";
 export { TopPagesChart } from "./charts/TopPagesChart";
 export { BreakdownBarChart } from "./charts/BreakdownBarChart";
 export { DonutChart } from "./charts/DonutChart";
+export { GroupedBreakdownChart } from "./charts/GroupedBreakdownChart";
 export { MetricsPageRenderer, DashboardRenderer } from "./MetricsPageRenderer";
 export { NarrativePageRenderer } from "./NarrativePageRenderer";
 export { SectionPlaceholder } from "./SectionPlaceholder";

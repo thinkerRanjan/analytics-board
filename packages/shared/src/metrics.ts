@@ -55,6 +55,14 @@ export type BreakdownRow = {
 /** Keyed by AudienceDimension; only the dimensions a page asks for are present. */
 export type AudienceBreakdowns = Record<string, BreakdownRow[]>;
 
+/** A ranked row, optionally scoped to a group such as a car model. */
+export type GroupedBreakdownRow = BreakdownRow & {
+  group: string | null;
+};
+
+/** Keyed by `eventBreakdownKey`. */
+export type EventBreakdowns = Record<string, GroupedBreakdownRow[]>;
+
 export type OverviewMetrics = {
   start: string;
   end: string;
@@ -70,4 +78,5 @@ export type OverviewMetrics = {
   sources: SourceRow[];
   pages: PageRow[];
   breakdowns?: AudienceBreakdowns;
+  eventBreakdowns?: EventBreakdowns;
 };

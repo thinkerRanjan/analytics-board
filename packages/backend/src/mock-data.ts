@@ -3,8 +3,11 @@ import type {
   AudienceBreakdowns,
   AudienceDimension,
   EngagementPoint,
+  EventBreakdowns,
+  EventBreakdownSpec,
   OverviewMetrics,
 } from "@analytics/shared";
+import { eventBreakdownKey } from "@analytics/shared";
 
 function hash(str: string): number {
   let h = 0;
@@ -75,6 +78,53 @@ export function getMockBreakdowns(
         ),
       }));
       return [dimension, rows.sort((a, b) => b.value - a.value)];
+    }),
+  );
+}
+
+const MOCK_MODELS = ["New Slavia", "Kylaq", "New Kushaq", "Slavia", "Octavia"];
+
+const MOCK_PARAM_VALUES: Record<string, string[]> = {
+  model: MOCK_MODELS,
+  variant: [
+    "Monte Carlo AT",
+    "Prestige AT",
+    "Signature+ AT",
+    "Classic MT",
+    "Sportline AT",
+  ],
+  color: [
+    "Deep Black",
+    "Lava Blue",
+    "Brilliant Silver",
+    "Candy White",
+    "Cherry Red",
+  ],
+};
+
+export function getMockEventBreakdowns(
+  tenantId: string,
+  specs: EventBreakdownSpec[],
+): EventBreakdowns {
+  return Object.fromEntries(
+    specs.map((spec) => {
+      const labels = MOCK_PARAM_VALUES[spec.param] ?? ["(not set)"];
+      const groups = spec.groupBy
+        ? (MOCK_PARAM_VALUES[spec.groupBy] ?? MOCK_MODELS)
+        : [null];
+
+      const rows = groups.flatMap((group) =>
+        labels.map((label, index) => ({
+          group,
+          label,
+          value: Math.round(
+            (2500 + (hash(`${tenantId}:${group}:${label}`) % 1500)) /
+              (index + 1.3),
+          ),
+        })),
+      );
+
+      return [eventBreakdownKey(spec), rows.sort((a, b) => b.value - a.value)];
     }),
   );
 }

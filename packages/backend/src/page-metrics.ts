@@ -8,12 +8,14 @@ import type {
 import {
   getDashboardPage,
   getPageDimensions,
+  getPageEventBreakdowns,
   getPageEventNames,
   pageNeedsEngagementMetrics,
 } from "@analytics/shared";
 import { fetchOverviewMetrics } from "./metrics";
 import { fetchEngagementDaily } from "./engagement";
 import { fetchAudienceBreakdowns } from "./audience";
+import { fetchEventBreakdowns } from "./event-breakdowns";
 
 export type PageMetricsResult =
   | {
@@ -50,23 +52,22 @@ export async function fetchPageMetrics(
   // pages that do not use them (Overview and friends) never pay for them.
   const needsEngagement = pageNeedsEngagementMetrics(page);
   const dimensions = getPageDimensions(page);
+  const eventSpecs = getPageEventBreakdowns(page);
 
-  const [data, engagement, breakdowns] = await Promise.all([
+  const [data, engagement, breakdowns, eventBreakdowns] = await Promise.all([
     fetchOverviewMetrics(tenant, start, end),
     needsEngagement
       ? fetchEngagementDaily(tenant, start, end, getPageEventNames(page))
       : Promise.resolve<EngagementPoint[]>([]),
     fetchAudienceBreakdowns(tenant, start, end, dimensions),
+    fetchEventBreakdowns(tenant, start, end, eventSpecs),
   ]);
 
-  const merged = engagement.length > 0 ? mergeEngagement(data, engagement) : data;
+  let result = engagement.length > 0 ? mergeEngagement(data, engagement) : data;
+  if (dimensions.length > 0) result = { ...result, breakdowns };
+  if (eventSpecs.length > 0) result = { ...result, eventBreakdowns };
 
-  return {
-    kind: "metrics",
-    pageId,
-    data:
-      dimensions.length > 0 ? { ...merged, breakdowns } : merged,
-  };
+  return { kind: "metrics", pageId, data: result };
 }
 
 function mergeEngagement(

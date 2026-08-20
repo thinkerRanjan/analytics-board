@@ -47,6 +47,17 @@ export type AudienceDimension = z.infer<typeof AudienceDimensionSchema>;
 
 const SpanSchema = z.enum(["half", "full"]).default("full");
 
+/**
+ * GA4 event and parameter names are interpolated into SQL, so they are pinned
+ * to plain identifiers here rather than sanitised later.
+ */
+const Ga4IdentifierSchema = z
+  .string()
+  .min(1)
+  .regex(/^[A-Za-z0-9_]+$/, "must be letters, digits, or underscores");
+
+export const GA4_IDENTIFIER_PATTERN = /^[A-Za-z0-9_]+$/;
+
 export const WidgetSchema = z.discriminatedUnion("type", [
   z.object({
     id: z.string().min(1),
@@ -82,6 +93,21 @@ export const WidgetSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     id: z.string().min(1),
+    type: z.literal("eventBreakdown"),
+    eventName: Ga4IdentifierSchema,
+    /** Event parameter whose values are ranked. */
+    param: Ga4IdentifierSchema,
+    /** Optional second parameter to split the ranking by, e.g. car model. */
+    groupBy: Ga4IdentifierSchema.optional(),
+    title: z.string().min(1),
+    subtitle: z.string().optional(),
+    /** Rows kept per group when grouped, or overall when not. */
+    limit: z.number().int().positive().max(25).default(10),
+    valueLabel: z.string().default("Events"),
+    span: SpanSchema,
+  }),
+  z.object({
+    id: z.string().min(1),
     type: z.literal("sources"),
   }),
   z.object({
@@ -107,6 +133,36 @@ export function pageNeedsEngagementMetrics(page: DashboardPage): boolean {
       widget.type === "eventTrend" ||
       (widget.type === "trend" && isEngagementMetric(widget.metric)),
   );
+}
+
+export type EventBreakdownSpec = {
+  eventName: string;
+  param: string;
+  groupBy?: string;
+};
+
+/** Stable identity for a spec so two widgets on the same data share one query. */
+export function eventBreakdownKey(spec: EventBreakdownSpec): string {
+  return `${spec.eventName}.${spec.param}.${spec.groupBy ?? ""}`;
+}
+
+/** Event-parameter breakdowns a page needs, deduplicated. */
+export function getPageEventBreakdowns(
+  page: DashboardPage,
+): EventBreakdownSpec[] {
+  if (page.kind !== "metrics") return [];
+
+  const specs = new Map<string, EventBreakdownSpec>();
+  for (const widget of page.widgets) {
+    if (widget.type !== "eventBreakdown") continue;
+    const spec: EventBreakdownSpec = {
+      eventName: widget.eventName,
+      param: widget.param,
+      groupBy: widget.groupBy,
+    };
+    specs.set(eventBreakdownKey(spec), spec);
+  }
+  return [...specs.values()];
 }
 
 /** Audience dimensions a page needs breakdowns for, derived from its widgets. */

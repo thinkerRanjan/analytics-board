@@ -19,10 +19,12 @@ export {
 export { fetchOverviewMetrics } from "./metrics";
 export { fetchEngagementDaily } from "./engagement";
 export { fetchAudienceBreakdowns } from "./audience";
+export { fetchEventBreakdowns } from "./event-breakdowns";
 export { fetchPageMetrics } from "./page-metrics";
 export type { PageMetricsResult } from "./page-metrics";
 export {
   getMockOverview,
   getMockEngagement,
   getMockBreakdowns,
+  getMockEventBreakdowns,
 } from "./mock-data";

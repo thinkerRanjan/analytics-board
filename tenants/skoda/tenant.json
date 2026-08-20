@@ -112,19 +112,44 @@
         "title": "Top Product Overview",
         "description": "Ranked models and products by traffic and interest.",
         "kind": "metrics",
-        "widgets": [],
-        "plannedSections": [
+        "widgets": [
           {
-            "id": "model-ranking",
-            "title": "Model ranking table",
-            "description": "Top models by sessions and pageviews."
+            "id": "configurator-opens-by-model",
+            "type": "eventBreakdown",
+            "eventName": "configurator_loaded",
+            "param": "model",
+            "title": "Configurator opens by model",
+            "subtitle": "Times each model was loaded in the configurator",
+            "valueLabel": "Opens",
+            "limit": 10,
+            "span": "full"
           },
           {
-            "id": "share-of-traffic",
-            "title": "Share of traffic",
-            "description": "Traffic split across product lines."
+            "id": "top-variant-per-model",
+            "type": "eventBreakdown",
+            "eventName": "variant_selected",
+            "param": "variant",
+            "groupBy": "model",
+            "title": "Top variants by model",
+            "subtitle": "Most selected trim for each car",
+            "valueLabel": "Selections",
+            "limit": 1,
+            "span": "full"
+          },
+          {
+            "id": "top-color-per-model",
+            "type": "eventBreakdown",
+            "eventName": "color_change_clicked",
+            "param": "color",
+            "groupBy": "model",
+            "title": "Top colours by model",
+            "subtitle": "Most previewed paint colour for each car",
+            "valueLabel": "Previews",
+            "limit": 1,
+            "span": "full"
           }
-        ]
+        ],
+        "plannedSections": []
       },
       {
         "id": "product-pages",

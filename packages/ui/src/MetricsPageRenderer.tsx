@@ -4,12 +4,14 @@ import type {
   PlannedSection,
   Widget,
 } from "@analytics/shared";
+import { eventBreakdownKey } from "@analytics/shared";
 import { KpiCard } from "./KpiCard";
 import { TrendChart } from "./charts/TrendChart";
 import { SourceBreakdownChart } from "./charts/SourceBreakdownChart";
 import { TopPagesChart } from "./charts/TopPagesChart";
 import { BreakdownBarChart } from "./charts/BreakdownBarChart";
 import { DonutChart } from "./charts/DonutChart";
+import { GroupedBreakdownChart } from "./charts/GroupedBreakdownChart";
 import { SectionPlaceholder } from "./SectionPlaceholder";
 import { Panel } from "./ui/Panel";
 
@@ -134,6 +136,49 @@ function renderWidget(widget: Widget, data: OverviewMetrics) {
       );
     }
 
+    case "eventBreakdown": {
+      const key = eventBreakdownKey({
+        eventName: widget.eventName,
+        param: widget.param,
+        groupBy: widget.groupBy,
+      });
+      const rows = data.eventBreakdowns?.[key] ?? [];
+      const grouped = Boolean(widget.groupBy);
+
+      return (
+        <Panel
+          title={widget.title}
+          subtitle={widget.subtitle}
+          action={
+            <span className="badge-soft">
+              {!grouped
+                ? `Top ${widget.limit}`
+                : widget.limit === 1
+                  ? `Top per ${widget.groupBy}`
+                  : `Top ${widget.limit} each`}
+            </span>
+          }
+        >
+          {rows.length === 0 ? (
+            <EmptyState
+              message={`No ${widget.eventName} events with a ${widget.param} value in this range.`}
+            />
+          ) : grouped ? (
+            <GroupedBreakdownChart
+              rows={rows}
+              limit={widget.limit}
+              valueLabel={widget.valueLabel}
+            />
+          ) : (
+            <BreakdownBarChart
+              data={rows.slice(0, widget.limit)}
+              valueLabel={widget.valueLabel}
+            />
+          )}
+        </Panel>
+      );
+    }
+
     case "sources":
       return (
         <Panel
@@ -173,7 +218,8 @@ function isFullWidth(widget: Widget): boolean {
   if (
     widget.type === "trend" ||
     widget.type === "eventTrend" ||
-    widget.type === "breakdown"
+    widget.type === "breakdown" ||
+    widget.type === "eventBreakdown"
   ) {
     return widget.span !== "half";
   }
