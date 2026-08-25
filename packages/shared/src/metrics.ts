@@ -63,6 +63,12 @@ export type GroupedBreakdownRow = BreakdownRow & {
 /** Keyed by `eventBreakdownKey`. */
 export type EventBreakdowns = Record<string, GroupedBreakdownRow[]>;
 
+/** Distinct car models used as Product Pages children. */
+export type ProductModel = {
+  name: string;
+  value: number;
+};
+
 export type OverviewMetrics = {
   start: string;
   end: string;

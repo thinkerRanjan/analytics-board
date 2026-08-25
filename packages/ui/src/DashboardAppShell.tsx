@@ -8,6 +8,7 @@ import type { TenantOption } from "./TenantSwitcher";
 
 type DashboardAppShellProps = {
   tenantName: string;
+  tenantLogo?: string | null;
   dashboardTitle: string;
   pages: DashboardNavItem[];
   tenants: TenantOption[];
@@ -24,6 +25,7 @@ type DashboardAppShellProps = {
 
 export function DashboardAppShell({
   tenantName,
+  tenantLogo,
   dashboardTitle,
   pages,
   tenants,
@@ -37,6 +39,7 @@ export function DashboardAppShell({
     <div className="min-h-full">
       <DashboardTopBar
         tenantName={tenantName}
+        tenantLogo={tenantLogo}
         dashboardTitle={dashboardTitle}
         tenants={tenants}
         activeTenantId={activeTenantId}

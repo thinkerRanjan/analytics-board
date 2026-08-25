@@ -19,6 +19,9 @@ services:
       USE_MOCK_DATA: ${USE_MOCK_DATA:-true}
       BIGQUERY_CREDENTIALS_JSON: ${BIGQUERY_CREDENTIALS_JSON:-}
       GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      COMMENTARY_CACHE_DIR: /tmp/analytics-board-commentary
     restart: unless-stopped
     healthcheck:
       test:

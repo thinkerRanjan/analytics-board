@@ -1,6 +1,7 @@
 {
   "id": "skoda",
   "name": "Skoda",
+  "logo": "/tenants/skoda/logo.png",
   "auth": {
     "allowedEmails": [
       "rohit@pragorlabs.com",
@@ -154,9 +155,42 @@
       {
         "id": "product-pages",
         "title": "Product Pages",
-        "description": "Performance of individual model landing pages.",
-        "kind": "metrics",
-        "widgets": [{ "id": "pages", "type": "pages" }],
+        "description": "Analytics for each car model in the configurator.",
+        "kind": "productIndex",
+        "sourceEvent": "configurator_loaded",
+        "sourceParam": "model",
+        "widgets": [
+          {
+            "id": "trend-configurator-loaded",
+            "type": "eventTrend",
+            "eventName": "configurator_loaded",
+            "title": "Configurator opens",
+            "subtitle": "Times this model was loaded in the configurator",
+            "span": "full"
+          },
+          {
+            "id": "top-variants",
+            "type": "eventBreakdown",
+            "eventName": "variant_selected",
+            "param": "variant",
+            "title": "Top variants",
+            "subtitle": "Most selected trims for this model",
+            "valueLabel": "Selections",
+            "limit": 10,
+            "span": "half"
+          },
+          {
+            "id": "top-colors",
+            "type": "eventBreakdown",
+            "eventName": "color_change_clicked",
+            "param": "color",
+            "title": "Top colours",
+            "subtitle": "Most previewed paint colours for this model",
+            "valueLabel": "Previews",
+            "limit": 10,
+            "span": "half"
+          }
+        ],
         "plannedSections": []
       },
       {
@@ -266,30 +300,14 @@
       {
         "id": "commentary",
         "title": "Qualitative Analytics Commentary",
-        "description": "Analyst notes and narrative context on performance.",
-        "kind": "narrative",
-        "sections": [
-          {
-            "id": "welcome",
-            "title": "Getting started",
-            "body": "Qualitative commentary for this reporting period will appear here. Add dated notes about campaigns, launches, or market context to complement the quantitative dashboards.",
-            "updatedAt": "2026-08-20"
-          }
-        ]
+        "description": "What the numbers show this period for marketing, sales, manufacturing, and inventory.",
+        "kind": "aiCommentary"
       },
       {
         "id": "insights",
         "title": "Inferences & Suggestions",
-        "description": "Actionable recommendations based on analytics trends.",
-        "kind": "narrative",
-        "sections": [
-          {
-            "id": "welcome",
-            "title": "Getting started",
-            "body": "Prioritized recommendations and suggested next steps will appear here once page-level metrics are configured.",
-            "updatedAt": "2026-08-20"
-          }
-        ]
+        "description": "Conclusions and recommended next steps for marketing, sales, manufacturing, and inventory.",
+        "kind": "aiInsights"
       }
     ]
   }

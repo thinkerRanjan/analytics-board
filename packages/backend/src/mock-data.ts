@@ -6,6 +6,7 @@ import type {
   EventBreakdowns,
   EventBreakdownSpec,
   OverviewMetrics,
+  ProductModel,
 } from "@analytics/shared";
 import { eventBreakdownKey } from "@analytics/shared";
 
@@ -109,13 +110,15 @@ export function getMockEventBreakdowns(
   return Object.fromEntries(
     specs.map((spec) => {
       const labels = MOCK_PARAM_VALUES[spec.param] ?? ["(not set)"];
-      const groups = spec.groupBy
-        ? (MOCK_PARAM_VALUES[spec.groupBy] ?? MOCK_MODELS)
-        : [null];
+      const groups = spec.filterValue
+        ? [spec.filterValue]
+        : spec.groupBy
+          ? (MOCK_PARAM_VALUES[spec.groupBy] ?? MOCK_MODELS)
+          : [null];
 
       const rows = groups.flatMap((group) =>
         labels.map((label, index) => ({
-          group,
+          group: spec.filterValue ? null : group,
           label,
           value: Math.round(
             (2500 + (hash(`${tenantId}:${group}:${label}`) % 1500)) /
@@ -127,6 +130,15 @@ export function getMockEventBreakdowns(
       return [eventBreakdownKey(spec), rows.sort((a, b) => b.value - a.value)];
     }),
   );
+}
+
+export function getMockProductModels(tenantId: string): ProductModel[] {
+  return MOCK_MODELS.map((name, index) => ({
+    name,
+    value: Math.round(
+      (4000 + (hash(`${tenantId}:${name}`) % 2500)) / (index + 1.15),
+    ),
+  })).sort((a, b) => b.value - a.value);
 }
 
 export function getMockOverview(

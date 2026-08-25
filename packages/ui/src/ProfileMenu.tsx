@@ -31,6 +31,7 @@ function getInitials(user: ProfileMenuUser): string {
 
 export function ProfileMenu({ user, signOutAction }: ProfileMenuProps) {
   const [open, setOpen] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -38,6 +39,10 @@ export function ProfileMenu({ user, signOutAction }: ProfileMenuProps) {
     setOpen(false);
     triggerRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [user.image]);
 
   useEffect(() => {
     if (!open) return;
@@ -71,9 +76,15 @@ export function ProfileMenu({ user, signOutAction }: ProfileMenuProps) {
         aria-haspopup="menu"
         aria-label="Open profile menu"
       >
-        {user.image ? (
+        {user.image && !imageFailed ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={user.image} alt="" className="h-full w-full object-cover" />
+          <img
+            src={user.image}
+            alt=""
+            referrerPolicy="no-referrer"
+            onError={() => setImageFailed(true)}
+            className="h-full w-full object-cover"
+          />
         ) : (
           <span className="text-xs font-semibold">{getInitials(user)}</span>
         )}

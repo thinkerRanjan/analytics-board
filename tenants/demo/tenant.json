@@ -48,14 +48,14 @@
       {
         "id": "commentary",
         "title": "Qualitative Analytics Commentary",
-        "kind": "narrative",
-        "sections": []
+        "description": "What the numbers show this period for marketing, sales, manufacturing, and inventory.",
+        "kind": "aiCommentary"
       },
       {
         "id": "insights",
         "title": "Inferences & Suggestions",
-        "kind": "narrative",
-        "sections": []
+        "description": "Conclusions and recommended next steps for marketing, sales, manufacturing, and inventory.",
+        "kind": "aiInsights"
       }
     ]
   }

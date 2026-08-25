@@ -61,6 +61,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const tenants = resolveTenantsForEmail(email);
         token.email = email;
         token.name = user?.name ?? token.name;
+        const picture =
+          user?.image ??
+          (typeof profile === "object" &&
+          profile &&
+          "picture" in profile &&
+          typeof profile.picture === "string"
+            ? profile.picture
+            : undefined);
+        if (picture) token.picture = picture;
         token.tenantIds = tenants.map((t) => t.id);
         token.tenantId = pickDefaultTenantId(tenants);
       }
@@ -70,6 +79,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.email = token.email as string;
         session.user.name = token.name as string;
+        session.user.image =
+          (typeof token.picture === "string" ? token.picture : null) ??
+          session.user.image;
       }
       session.tenantId = (token.tenantId as string | null) ?? null;
       session.tenantIds = (token.tenantIds as string[]) ?? [];

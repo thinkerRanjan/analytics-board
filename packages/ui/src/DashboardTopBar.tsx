@@ -6,6 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 
 type DashboardTopBarProps = {
   tenantName: string;
+  tenantLogo?: string | null;
   dashboardTitle: string;
   tenants: TenantOption[];
   activeTenantId: string;
@@ -25,6 +26,7 @@ function initials(name: string): string {
 
 export function DashboardTopBar({
   tenantName,
+  tenantLogo,
   dashboardTitle,
   tenants,
   activeTenantId,
@@ -35,7 +37,16 @@ export function DashboardTopBar({
     <header className="shell-topbar">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="shell-brand-mark">{initials(tenantName)}</span>
+          {tenantLogo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={tenantLogo}
+              alt={`${tenantName} logo`}
+              className="shell-brand-logo"
+            />
+          ) : (
+            <span className="shell-brand-mark">{initials(tenantName)}</span>
+          )}
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold leading-tight">
               {tenantName}

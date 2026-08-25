@@ -1,7 +1,10 @@
 import type {
+  CommentaryReport,
   EngagementPoint,
+  InsightReport,
   NarrativeSection,
   OverviewMetrics,
+  ProductModel,
   TenantConfig,
   TrendPoint,
 } from "@analytics/shared";
@@ -11,11 +14,16 @@ import {
   getPageEventBreakdowns,
   getPageEventNames,
   pageNeedsEngagementMetrics,
+  scopedEventBreakdowns,
+  type ProductIndexPage,
 } from "@analytics/shared";
 import { fetchOverviewMetrics } from "./metrics";
 import { fetchEngagementDaily } from "./engagement";
 import { fetchAudienceBreakdowns } from "./audience";
 import { fetchEventBreakdowns } from "./event-breakdowns";
+import { fetchModelEventDaily, fetchProductModels } from "./product-models";
+import { fetchCommentary, fetchInsights } from "./commentary";
+import { useMockData } from "./bigquery";
 
 export type PageMetricsResult =
   | {
@@ -27,6 +35,22 @@ export type PageMetricsResult =
       kind: "narrative";
       pageId: string;
       sections: NarrativeSection[];
+    }
+  | {
+      kind: "productIndex";
+      pageId: string;
+      models: ProductModel[];
+      mock: boolean;
+    }
+  | {
+      kind: "aiCommentary";
+      pageId: string;
+      report: CommentaryReport;
+    }
+  | {
+      kind: "aiInsights";
+      pageId: string;
+      report: InsightReport;
     };
 
 export async function fetchPageMetrics(
@@ -45,6 +69,32 @@ export async function fetchPageMetrics(
       kind: "narrative",
       pageId,
       sections: page.sections,
+    };
+  }
+
+  if (page.kind === "aiCommentary") {
+    const report = await fetchCommentary(tenant, start, end);
+    return { kind: "aiCommentary", pageId, report };
+  }
+
+  if (page.kind === "aiInsights") {
+    const report = await fetchInsights(tenant, start, end);
+    return { kind: "aiInsights", pageId, report };
+  }
+
+  if (page.kind === "productIndex") {
+    const models = await fetchProductModels(
+      tenant,
+      start,
+      end,
+      page.sourceEvent,
+      page.sourceParam,
+    );
+    return {
+      kind: "productIndex",
+      pageId,
+      models,
+      mock: useMockData(),
     };
   }
 
@@ -68,6 +118,50 @@ export async function fetchPageMetrics(
   if (eventSpecs.length > 0) result = { ...result, eventBreakdowns };
 
   return { kind: "metrics", pageId, data: result };
+}
+
+export async function fetchProductModelMetrics(
+  tenant: TenantConfig,
+  page: ProductIndexPage,
+  model: string,
+  start: string,
+  end: string,
+): Promise<OverviewMetrics> {
+  const eventNames = getPageEventNames(page);
+  const eventSpecs = scopedEventBreakdowns(page, page.sourceParam, model);
+
+  const [events, eventBreakdowns] = await Promise.all([
+    fetchModelEventDaily(
+      tenant,
+      start,
+      end,
+      eventNames,
+      page.sourceParam,
+      model,
+    ),
+    fetchEventBreakdowns(tenant, start, end, eventSpecs),
+  ]);
+
+  const trend: TrendPoint[] = events.map((point) => ({
+    date: point.date,
+    sessions: 0,
+    users: 0,
+    pageviews: 0,
+    conversions: 0,
+    events: point.events,
+  }));
+
+  return {
+    start,
+    end,
+    mock: useMockData(),
+    tenantId: tenant.id,
+    kpis: { sessions: 0, users: 0, pageviews: 0, conversions: 0 },
+    trend,
+    sources: [],
+    pages: [],
+    eventBreakdowns,
+  };
 }
 
 function mergeEngagement(

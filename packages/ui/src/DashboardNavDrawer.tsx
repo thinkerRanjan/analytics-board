@@ -9,9 +9,78 @@ type DashboardNavDrawerProps = {
   pages: DashboardNavItem[];
 };
 
-function buildHref(pageId: string, searchParams: URLSearchParams): string {
+function itemHref(page: DashboardNavItem, searchParams: { toString(): string }): string {
+  const base = page.href ?? `/dashboard/${page.id}`;
   const query = searchParams.toString();
-  return query ? `/dashboard/${pageId}?${query}` : `/dashboard/${pageId}`;
+  return query ? `${base}?${query}` : base;
+}
+
+function normalizePath(path: string): string {
+  try {
+    return decodeURIComponent(path);
+  } catch {
+    return path;
+  }
+}
+
+function isActivePath(pathname: string, page: DashboardNavItem): boolean {
+  const href = normalizePath(page.href ?? `/dashboard/${page.id}`);
+  const path = normalizePath(pathname);
+  if (path === href) return true;
+  if (page.children && page.children.length > 0) {
+    return path.startsWith(`${href}/`);
+  }
+  return false;
+}
+
+function kindLabel(kind: DashboardNavItem["kind"]): string | null {
+  if (kind === "narrative") return "Notes";
+  if (kind === "aiCommentary") return "AI";
+  if (kind === "aiInsights") return "AI";
+  if (kind === "productIndex") return "Models";
+  if (kind === "model" || kind === "department") return null;
+  return "Charts";
+}
+
+function DrawerLink({
+  page,
+  searchParams,
+  pathname,
+  onClose,
+  nested = false,
+}: {
+  page: DashboardNavItem;
+  searchParams: { toString(): string };
+  pathname: string;
+  onClose: () => void;
+  nested?: boolean;
+}) {
+  const active = isActivePath(pathname, page);
+  const label = kindLabel(page.kind);
+
+  return (
+    <Link
+      href={itemHref(page, searchParams)}
+      onClick={onClose}
+      data-active={active}
+      className={nested ? "drawer-sublink" : "drawer-link"}
+      aria-current={active ? "page" : undefined}
+    >
+      <span className="flex items-center justify-between gap-2">
+        <span className={nested ? "text-[0.8125rem] font-medium" : "text-sm font-medium"}>
+          {page.title}
+        </span>
+        {label ? (
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">
+            {label}
+          </span>
+        ) : null}
+      </span>
+      {!nested && page.description ? (
+        <span className="mt-1 block text-xs text-muted">{page.description}</span>
+      ) : null}
+    </Link>
+  );
 }
 
 function DrawerLinks({
@@ -23,7 +92,6 @@ function DrawerLinks({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const activePageId = pathname.split("/").filter(Boolean).pop() ?? "";
 
   if (pages.length === 0) {
     return (
@@ -36,28 +104,29 @@ function DrawerLinks({
   return (
     <ul className="flex flex-col gap-1">
       {pages.map((page) => {
-        const active = page.id === activePageId;
         return (
           <li key={page.id}>
-            <Link
-              href={buildHref(page.id, searchParams)}
-              onClick={onClose}
-              data-active={active}
-              className="drawer-link"
-              aria-current={active ? "page" : undefined}
-            >
-              <span className="flex items-center justify-between gap-2">
-                <span className="text-sm font-medium">{page.title}</span>
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">
-                  {page.kind === "narrative" ? "Notes" : "Charts"}
-                </span>
-              </span>
-              {page.description ? (
-                <span className="mt-1 block text-xs text-muted">
-                  {page.description}
-                </span>
-              ) : null}
-            </Link>
+            <DrawerLink
+              page={page}
+              searchParams={searchParams}
+              pathname={pathname}
+              onClose={onClose}
+            />
+            {page.children && page.children.length > 0 ? (
+              <ul className="drawer-sublist">
+                {page.children.map((child) => (
+                  <li key={child.id}>
+                    <DrawerLink
+                      page={child}
+                      searchParams={searchParams}
+                      pathname={pathname}
+                      onClose={onClose}
+                      nested
+                    />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </li>
         );
       })}

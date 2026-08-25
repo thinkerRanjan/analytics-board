@@ -20,11 +20,17 @@ export { fetchOverviewMetrics } from "./metrics";
 export { fetchEngagementDaily } from "./engagement";
 export { fetchAudienceBreakdowns } from "./audience";
 export { fetchEventBreakdowns } from "./event-breakdowns";
-export { fetchPageMetrics } from "./page-metrics";
+export {
+  fetchProductModels,
+  fetchModelEventDaily,
+} from "./product-models";
+export { fetchPageMetrics, fetchProductModelMetrics } from "./page-metrics";
+export { fetchCommentary, fetchInsights } from "./commentary";
 export type { PageMetricsResult } from "./page-metrics";
 export {
   getMockOverview,
   getMockEngagement,
   getMockBreakdowns,
   getMockEventBreakdowns,
+  getMockProductModels,
 } from "./mock-data";

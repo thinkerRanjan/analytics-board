@@ -8,7 +8,7 @@ export function NarrativePageRenderer({ sections }: NarrativePageRendererProps) 
   if (sections.length === 0) {
     return (
       <div className="surface-dashed flex h-48 items-center justify-center px-6 text-center text-sm text-muted">
-        No commentary or insights have been added for this page yet.
+        No notes have been added for this page yet.
       </div>
     );
   }

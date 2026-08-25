@@ -47,6 +47,7 @@ See [`.env.example`](.env.example).
 | `GOOGLE_APPLICATION_CREDENTIALS` | Path to shared service account JSON |
 | `BIGQUERY_CREDENTIALS_JSON` | Inline SA JSON (Cloud Run) |
 | `USE_MOCK_DATA` | `true` to skip BigQuery and use sample metrics |
+| `GEMINI_API_KEY` / `OPENAI_API_KEY` | AI commentary on the Qualitative Analytics page (cached per tenant + date range) |
 
 Per-tenant project/dataset come from JSON — not global env vars.
 

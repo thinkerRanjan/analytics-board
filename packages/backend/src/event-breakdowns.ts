@@ -39,7 +39,9 @@ export async function fetchEventBreakdowns(
     (spec) =>
       GA4_IDENTIFIER_PATTERN.test(spec.eventName) &&
       GA4_IDENTIFIER_PATTERN.test(spec.param) &&
-      (spec.groupBy === undefined || GA4_IDENTIFIER_PATTERN.test(spec.groupBy)),
+      (spec.groupBy === undefined || GA4_IDENTIFIER_PATTERN.test(spec.groupBy)) &&
+      (spec.filterParam === undefined ||
+        GA4_IDENTIFIER_PATTERN.test(spec.filterParam)),
   );
   if (safe.length === 0) return {};
 
@@ -51,12 +53,24 @@ export async function fetchEventBreakdowns(
   const startKey = start.replaceAll("-", "");
   const endKey = end.replaceAll("-", "");
   const eventNames = [...new Set(safe.map((spec) => spec.eventName))];
+  const queryParams: Record<string, unknown> = { startKey, endKey, eventNames };
 
-  const parts = safe.map((spec) => {
+  const parts = safe.map((spec, index) => {
     const key = eventBreakdownKey(spec);
     const group = spec.groupBy
       ? `IFNULL(NULLIF(${stringParam(spec.groupBy)}, ''), '(not set)')`
       : "CAST(NULL AS STRING)";
+
+    let filterSql = "";
+    if (
+      spec.filterParam &&
+      spec.filterValue &&
+      GA4_IDENTIFIER_PATTERN.test(spec.filterParam)
+    ) {
+      const paramName = `filterValue${index}`;
+      queryParams[paramName] = spec.filterValue;
+      filterSql = `AND IFNULL(NULLIF(${stringParam(spec.filterParam)}, ''), '(not set)') = @${paramName}`;
+    }
 
     return `
       SELECT '${key}' AS spec, grp, label, value FROM (
@@ -66,6 +80,7 @@ export async function fetchEventBreakdowns(
           COUNT(*) AS value
         FROM base
         WHERE event_name = '${spec.eventName}'
+          ${filterSql}
         GROUP BY grp, label
         ORDER BY value DESC
         LIMIT ${ROWS_PER_SPEC}
@@ -83,7 +98,7 @@ export async function fetchEventBreakdowns(
     )
     ${parts.join("\nUNION ALL\n")}
     `,
-    { startKey, endKey, eventNames },
+    queryParams,
   );
 
   const result: EventBreakdowns = Object.fromEntries(
