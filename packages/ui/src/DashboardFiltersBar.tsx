@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { parseDateRange } from "@analytics/shared";
 import { useSearchParams } from "next/navigation";
@@ -28,8 +29,18 @@ function DateRangePickerInner({
     urlPreset ?? fallbackPreset,
   );
 
+  const href =
+    range.preset === "custom"
+      ? `/dashboard/export?preset=custom&start=${range.start}&end=${range.end}`
+      : `/dashboard/export?preset=${range.preset}`;
+
   return (
-    <DateRangePicker start={range.start} end={range.end} preset={range.preset} />
+    <>
+      <DateRangePicker start={range.start} end={range.end} preset={range.preset} />
+      <Link href={href} className="btn-outline px-3 py-1.5 text-sm">
+        Export PDF
+      </Link>
+    </>
   );
 }
 
@@ -38,6 +49,8 @@ export function DashboardFiltersBar({
 }: {
   defaultPreset: "7d" | "28d" | "90d";
 }) {
+  // Date range + export share one Suspense boundary so the PDF link
+  // always uses the same resolved range as the picker.
   return (
     <div className="shell-subbar">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6">
@@ -47,7 +60,9 @@ export function DashboardFiltersBar({
         <Suspense
           fallback={<div className="skeleton h-9 w-64 animate-pulse" />}
         >
-          <DateRangePickerInner defaultPreset={defaultPreset} />
+          <div className="flex flex-wrap items-center gap-3">
+            <DateRangePickerInner defaultPreset={defaultPreset} />
+          </div>
         </Suspense>
       </div>
     </div>

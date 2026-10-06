@@ -8,6 +8,9 @@ import type {
 import { runQuery, useMockData } from "./bigquery";
 import { getMockOverview } from "./mock-data";
 
+/** The only conversion in this product: a booked test-drive click. */
+const TEST_DRIVE_EVENT = "book_test_drive_clicked";
+
 type DailyRow = {
   event_date: string;
   sessions: number;
@@ -82,7 +85,8 @@ async function fetchFromMarts(
     { start, end },
   );
 
-  return assemble(tenant.id, start, end, trend, sources, pages, false);
+  const metrics = assemble(tenant.id, start, end, trend, sources, pages, false);
+  return overlayTestDriveConversions(tenant, qualified, start, end, metrics);
 }
 
 async function fetchFromEvents(
@@ -105,7 +109,7 @@ async function fetchFromEvents(
       )) AS sessions,
       COUNT(DISTINCT user_pseudo_id) AS users,
       COUNTIF(event_name = 'page_view') AS pageviews,
-      COUNTIF(event_name = 'purchase' OR event_name = 'generate_lead') AS conversions
+      COUNTIF(event_name = '${TEST_DRIVE_EVENT}') AS conversions
     FROM \`${qualified}.events_*\`
     WHERE _TABLE_SUFFIX BETWEEN @startKey AND @endKey
     GROUP BY event_date
@@ -152,6 +156,56 @@ async function fetchFromEvents(
   );
 
   return assemble(tenant.id, start, end, trend, sources, pages, false);
+}
+
+async function overlayTestDriveConversions(
+  tenant: TenantConfig,
+  qualified: string,
+  start: string,
+  end: string,
+  metrics: OverviewMetrics,
+): Promise<OverviewMetrics> {
+  const startKey = start.replaceAll("-", "");
+  const endKey = end.replaceAll("-", "");
+  const rows = await runQuery<{ event_date: string; conversions: number }>(
+    tenant,
+    `
+    SELECT
+      FORMAT_DATE('%Y-%m-%d', PARSE_DATE('%Y%m%d', event_date)) AS event_date,
+      COUNT(*) AS conversions
+    FROM \`${qualified}.events_*\`
+    WHERE _TABLE_SUFFIX BETWEEN @startKey AND @endKey
+      AND event_name = '${TEST_DRIVE_EVENT}'
+    GROUP BY event_date
+    `,
+    { startKey, endKey },
+  );
+
+  const counts = new Map(
+    rows.map((row) => [row.event_date, Number(row.conversions) || 0]),
+  );
+  const byDate = new Map(metrics.trend.map((point) => [point.date, point]));
+  const dates = new Set([...byDate.keys(), ...counts.keys()]);
+  const trend = [...dates].sort().map((date) => {
+    const point = byDate.get(date);
+    const conversions = counts.get(date) ?? 0;
+    return point
+      ? { ...point, conversions }
+      : {
+          date,
+          sessions: 0,
+          users: 0,
+          pageviews: 0,
+          conversions,
+        };
+  });
+  const conversions = [...counts.values()].reduce((sum, value) => sum + value, 0);
+
+  return {
+    ...metrics,
+    trend,
+    kpis: { ...metrics.kpis, conversions },
+  };
 }
 
 function assemble(

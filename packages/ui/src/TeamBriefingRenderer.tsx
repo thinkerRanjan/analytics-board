@@ -50,7 +50,7 @@ export function TeamBriefingRenderer({
         {headline ? (
           <p className="max-w-5xl text-sm leading-relaxed text-foreground-soft">{headline}</p>
         ) : null}
-        <span className="badge-soft">
+        <span className="badge-soft report-print-hide">
           {cached ? "Cached" : "Fresh"} · {formatGeneratedAt(generatedAt)}
         </span>
       </div>

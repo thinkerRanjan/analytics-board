@@ -186,7 +186,7 @@ export async function buildAnalyticsBrief(
     ...briefWithoutOps,
     ops: deriveOps(briefWithoutOps),
     caveats: [
-      "conversions are GA4 conversion events, not dealer invoices or bookings.",
+      "conversions are book_test_drive_clicked events (test drive leads), counted as clicks not distinct users.",
       "audience shares are of the listed rows unless noted against sessions.",
       "source shares are of total sessions.",
       "model shares are of configurator_loaded (or the product-index event) in this range.",

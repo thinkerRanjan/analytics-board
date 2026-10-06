@@ -1,6 +1,7 @@
 "use client";
 
 import type { DashboardNavItem } from "@analytics/shared";
+import { usePathname } from "next/navigation";
 import { DashboardFiltersBar } from "./DashboardFiltersBar";
 import { DashboardNavDrawer } from "./DashboardNavDrawer";
 import { DashboardTopBar } from "./DashboardTopBar";
@@ -35,6 +36,11 @@ export function DashboardAppShell({
   signOutAction,
   children,
 }: DashboardAppShellProps) {
+  const pathname = usePathname();
+  if (pathname.startsWith("/dashboard/export")) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-full">
       <DashboardTopBar

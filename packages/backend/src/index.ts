@@ -24,7 +24,11 @@ export {
   fetchProductModels,
   fetchModelEventDaily,
 } from "./product-models";
-export { fetchPageMetrics, fetchProductModelMetrics } from "./page-metrics";
+export {
+  fetchPageMetrics,
+  fetchProductModelMetrics,
+  fetchFullDashboardReport,
+} from "./page-metrics";
 export { fetchCommentary, fetchInsights } from "./commentary";
 export type { PageMetricsResult } from "./page-metrics";
 export {

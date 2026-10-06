@@ -23,7 +23,7 @@ export function mockBriefing(
 
   return BriefingLlmPayloadSchema.parse({
     commentary: {
-      headline: `${brief.tenantName} recorded ${sessions} sessions (${ops.pagesPerSession} pages/session); configurator start rate ${pctLabel(ops.funnel.configuratorStartRate)} and GA4 conversion rate ${ops.conversionRatePct}%. ${topModel} is ${pctLabel(ops.concentration.topModelShare)} of configurator mix.`,
+      headline: `${brief.tenantName} recorded ${sessions} sessions (${ops.pagesPerSession} pages/session); configurator start rate ${pctLabel(ops.funnel.configuratorStartRate)} and test-drive lead rate ${ops.conversionRatePct}%. ${topModel} is ${pctLabel(ops.concentration.topModelShare)} of configurator mix.`,
       teams: [
         marketingCommentary(brief, ops, sessions, users, sourceLine, topSource, topCity, topRegion),
         salesCommentary(brief, ops, sessions, topModel),
@@ -97,7 +97,7 @@ function salesCommentary(
   return {
     id: "sales" as const,
     title: COMMENTARY_TEAM_COPY.sales.title,
-    summary: `Build-and-price consideration is ${pctLabel(ops.funnel.configuratorStartRate)} of sessions; GA4 conversion rate is ${ops.conversionRatePct}%.`,
+    summary: `Build-and-price consideration is ${pctLabel(ops.funnel.configuratorStartRate)} of sessions; test-drive lead rate is ${ops.conversionRatePct}%.`,
     cards: [
       {
         id: "s1",
@@ -108,8 +108,8 @@ function salesCommentary(
       {
         id: "s2",
         category: ops.conversionRate === 0 ? ("gap" as const) : ("win" as const),
-        title: "GA4 conversion rate",
-        body: `Recorded conversions are ${brief.kpis.conversions.toLocaleString()} (${ops.conversionRatePct}% of sessions; ${pctLabel(ops.funnel.conversionPerConfiguratorStart)} of configurator starts). Caveat: these are GA4 conversion events, not dealer invoices.`,
+        title: "Test-drive lead rate",
+        body: `book_test_drive_clicked fired ${brief.kpis.conversions.toLocaleString()} times (${ops.conversionRatePct}% of sessions; ${pctLabel(ops.funnel.conversionPerConfiguratorStart)} of configurator starts). That count is the conversion: a test-drive lead, not a purchase or generate_lead.`,
       },
       {
         id: "s3",
@@ -265,7 +265,7 @@ function salesInsights(ops: AnalyticsBrief["ops"], topModel: string) {
     id: "sales" as const,
     title: INSIGHT_TEAM_COPY.sales.title,
     summary:
-      "Score configurator + chatbot as MQL proxies; close the GA4 conversion instrumentation gap if CR is zero.",
+      "Score configurator and chatbot as early intent, and book_test_drive_clicked as the booked test-drive lead.",
     cards: [
       {
         id: "sc1",
@@ -278,12 +278,12 @@ function salesInsights(ops: AnalyticsBrief["ops"], topModel: string) {
         category: "suggestion" as const,
         title:
           ops.conversionRate === 0
-            ? "Instrument the conversion event"
-            : "Tighten start-to-conversion path",
+            ? "No test-drive leads recorded"
+            : "Tighten start-to-booking path",
         body:
           ops.conversionRate === 0
-            ? "Map enquiry/booking events into GA4 conversions and the CRM so configurator starts are not orphaned. Until then, do not read zero conversions as zero dealer demand."
-            : `Assign drop-off owners between configurator_started (${ops.funnel.configuratorStarted.toLocaleString()}) and recorded conversions.`,
+            ? "No book_test_drive_clicked events were recorded, so configurator starts did not become test-drive leads. Follow up the consideration volume; do not treat the zero as a missing purchase event."
+            : `Assign drop-off owners between configurator_started (${ops.funnel.configuratorStarted.toLocaleString()}) and book_test_drive_clicked (${ops.funnel.conversions.toLocaleString()} test-drive leads).`,
       },
       {
         id: "ss2",

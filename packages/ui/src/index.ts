@@ -25,6 +25,10 @@ export { Panel } from "./ui/Panel";
 export { Button } from "./ui/Button";
 export { ThemeProvider, useTheme } from "./ThemeProvider";
 export { ThemeToggle } from "./ThemeToggle";
+export { FullReportDocument } from "./FullReportDocument";
+export { PrintReportButton } from "./PrintReportButton";
+export { ExportReportToolbar } from "./ExportReportToolbar";
+export { ExportPrintCanvas } from "./ExportPrintCanvas";
 export { THEME_INIT_SCRIPT, THEME_STORAGE_KEY } from "./theme";
 export type { ThemePreference, ResolvedTheme } from "./theme";
 export {

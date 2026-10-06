@@ -217,7 +217,7 @@ COMMENTARY (observations only — no recommendations, no should/consider/test/sh
 - category "win" = going well as a fact; "gap" = a shortcoming as a fact.
 - Each card: 4–7 sentences, at least two concrete figures, named entities.
 - Marketing: acquisition mix (source/medium, paid vs organic vs referral vs unassigned), channel concentration (top source share, top-3 share), landing-page mix, device split, new vs returning, session depth (pages/session, avg engagement time), geo concentration, chatbot as an on-site engagement event. Use terms: media mix, channel mix, SOV of listed channels, session quality, engaged users, bounce is NOT in the data so do not mention bounce.
-- Sales: digital showroom / build-and-price funnel (sessions → configurator_started → configurator_loaded → variant_selected / colour preview → conversions), conversion rate vs configurator start rate, intent signals, drop-off between funnel steps, model-level consideration. Use terms: TOFU/MOFU consideration, lead leakage, close rate only if conversions > 0, otherwise say GA4 conversion events are zero (not dealer deliveries).
+- Sales: digital showroom / build-and-price funnel (sessions → configurator_started → configurator_loaded → variant_selected / colour preview → book_test_drive_clicked). conversions and conversion rate ARE test drive leads (that event only), not purchases, generate_lead, or dealer invoices. Compare conversion rate with configurator start rate, name drop-off between funnel steps, and model-level consideration. Use terms: TOFU/MOFU consideration, lead leakage, test-drive lead rate. If conversions are 0, say no test-drive clicks were recorded in the period.
 - Manufacturing: model mix as a production-mix / MPS demand signal, variant as option/trim take-rate, colour as paint take-rate, SKU proliferation vs commonality, run-rate implied by relative opens (not units built). Use terms: take-rate, mix vs volume, option penetration, commonality, changeover implication, build-to-order vs build-to-stock signal. Never state plant output.
 - Inventory: SKU-level demand sensing from configurator mix, ABC-style ranking of models (A-mover vs long-tail), colour/trim as stocking mix, regional allocation signal from audience.region/city. Use terms: demand sensing, allocation, replenishment priority, slow-mover risk, safety-stock candidate, display-stock vs pipeline. Never state days of supply or on-hand qty.
 
@@ -225,7 +225,7 @@ INSIGHTS (all conclusions and actions — never put these in commentary):
 - category "conclusion" = what the pattern means for that function; "suggestion" = a concrete next step with an owner-style action (campaign, CRM, MPS, allocation).
 - Each team: mix of conclusions and suggestions (at least 2 of each when data supports it).
 - Marketing suggestions: media mix reallocation among named source/medium pairs, geo expansion vs control market, landing-page/CRO on named pages, device experience, UTM hygiene if unassigned traffic is large, creative tests tied to the lead model. Do not invent CAC, ROAS, or spend.
-- Sales suggestions: lead scoring using configurator + chatbot as MQL proxies, follow-up SLA, demo-car / test-drive alignment to the lead model, conversion-event instrumentation if conversions are 0, script and offer for the lead trim/colour.
+- Sales suggestions: lead scoring using configurator + chatbot as MQL proxies and book_test_drive_clicked as the booked lead, follow-up SLA on those test-drive leads, demo-car alignment to the lead model, script and offer for the lead trim/colour. If conversions are 0, the gap is no test-drive bookings in the period, not a missing GA4 conversion event.
 - Manufacturing suggestions: freeze-horizon mix input, which model/trim/paint to treat as the high-runner, which low take-rate options to keep configure-to-order, colour commonality to reduce paint changeovers. Frame as planning input from digital intent, not a shop-floor order.
 - Inventory suggestions: allocate A-movers (named models) first, light-stock C-movers, regional replenishment toward the lead state/city, default dealer pipeline to #1 trim and paint per model, flag slow-movers for transshipment not replenishment.
 
@@ -234,7 +234,7 @@ Shared rules:
 - Each team gets 5–6 cards (minimum 4).
 - Card titles under 8 words; prefer domain terms (e.g. "Configurator start rate", "Paint take-rate", "Channel concentration") over slogans.
 - Prefer ops.funnel and ops.concentration over restating a single raw count.
-- If conversions are 0, treat that as a measurement or funnel-breakage fact, not as "sales are fine".`;
+- If conversions are 0, that means no book_test_drive_clicked events in the period. Treat it as a funnel fact, not as "sales are fine" and not as a missing purchase or generate_lead event.`;
 }
 
 async function generateWithGemini(

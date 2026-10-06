@@ -326,6 +326,15 @@ export const TenantConfigSchema = z.object({
     .string()
     .regex(/^\/[A-Za-z0-9/._-]+$/, "must be a site-relative path")
     .optional(),
+  /** Brochure / PDF cover tokens. Dashboard chrome still uses global CSS. */
+  brand: z
+    .object({
+      tagline: z.string().min(1).max(80).optional(),
+      coverBackground: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      coverForeground: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    })
+    .optional(),
   auth: z.object({
     allowedEmails: z.array(z.string()).default([]),
     allowedDomains: z.array(z.string()).default([]),

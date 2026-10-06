@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import type { DateRangePreset } from "@analytics/shared";
 
 const PRESETS: { id: Exclude<DateRangePreset, "custom">; label: string }[] = [
@@ -21,6 +21,16 @@ export function DateRangePicker({ start, end, preset }: DateRangePickerProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
+  const [draftStart, setDraftStart] = useState(start);
+  const [draftEnd, setDraftEnd] = useState(end);
+
+  useEffect(() => {
+    setDraftStart(start);
+    setDraftEnd(end);
+  }, [start, end]);
+
+  const rangeReady = Boolean(draftStart && draftEnd && draftStart <= draftEnd);
+  const dirty = draftStart !== start || draftEnd !== end;
 
   const update = useCallback(
     (next: { preset?: string; start?: string; end?: string }) => {
@@ -60,25 +70,41 @@ export function DateRangePicker({ start, end, preset }: DateRangePickerProps) {
         ))}
       </div>
 
-      <div className="flex items-center gap-2">
+      <form
+        className="flex items-center gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!rangeReady) return;
+          update({ start: draftStart, end: draftEnd, preset: "custom" });
+        }}
+      >
         <input
           type="date"
           aria-label="Start date"
-          value={start}
+          value={draftStart}
           disabled={pending}
-          onChange={(e) => update({ start: e.target.value, end, preset: "custom" })}
+          max={draftEnd || undefined}
+          onChange={(e) => setDraftStart(e.target.value)}
           className="field"
         />
         <span className="text-xs text-muted">to</span>
         <input
           type="date"
           aria-label="End date"
-          value={end}
+          value={draftEnd}
           disabled={pending}
-          onChange={(e) => update({ start, end: e.target.value, preset: "custom" })}
+          min={draftStart || undefined}
+          onChange={(e) => setDraftEnd(e.target.value)}
           className="field"
         />
-      </div>
+        <button
+          type="submit"
+          className="btn-accent px-3 py-1.5 text-sm"
+          disabled={pending || !dirty || !rangeReady}
+        >
+          Apply
+        </button>
+      </form>
     </div>
   );
 }

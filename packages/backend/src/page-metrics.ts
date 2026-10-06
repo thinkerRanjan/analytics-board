@@ -1,10 +1,11 @@
 import type {
-  CommentaryReport,
+  DashboardPage,
   EngagementPoint,
-  InsightReport,
-  NarrativeSection,
+  FullDashboardReport,
+  FullReportModelSection,
+  FullReportPageSection,
   OverviewMetrics,
-  ProductModel,
+  PageMetricsResult,
   TenantConfig,
   TrendPoint,
 } from "@analytics/shared";
@@ -25,33 +26,7 @@ import { fetchModelEventDaily, fetchProductModels } from "./product-models";
 import { fetchCommentary, fetchInsights } from "./commentary";
 import { useMockData } from "./bigquery";
 
-export type PageMetricsResult =
-  | {
-      kind: "metrics";
-      pageId: string;
-      data: OverviewMetrics;
-    }
-  | {
-      kind: "narrative";
-      pageId: string;
-      sections: NarrativeSection[];
-    }
-  | {
-      kind: "productIndex";
-      pageId: string;
-      models: ProductModel[];
-      mock: boolean;
-    }
-  | {
-      kind: "aiCommentary";
-      pageId: string;
-      report: CommentaryReport;
-    }
-  | {
-      kind: "aiInsights";
-      pageId: string;
-      report: InsightReport;
-    };
+export type { PageMetricsResult } from "@analytics/shared";
 
 export async function fetchPageMetrics(
   tenant: TenantConfig,
@@ -162,6 +137,98 @@ export async function fetchProductModelMetrics(
     pages: [],
     eventBreakdowns,
   };
+}
+
+export type {
+  FullDashboardReport,
+  FullReportModelSection,
+  FullReportPageSection,
+} from "@analytics/shared";
+
+export async function fetchFullDashboardReport(
+  tenant: TenantConfig,
+  start: string,
+  end: string,
+): Promise<FullDashboardReport> {
+  const sections = await Promise.all(
+    tenant.dashboard.pages.map((page) =>
+      fetchReportPageSection(tenant, page, start, end),
+    ),
+  );
+
+  const mock = sections.some((section) => {
+    if (section.result?.kind === "metrics") return section.result.data.mock;
+    if (section.result?.kind === "productIndex") return section.result.mock;
+    if (
+      section.result?.kind === "aiCommentary" ||
+      section.result?.kind === "aiInsights"
+    ) {
+      return section.result.report.mock;
+    }
+    return section.models?.some((model) => model.data?.mock) ?? false;
+  });
+
+  return {
+    tenantName: tenant.name,
+    tenantLogo: tenant.logo,
+    dashboardTitle: tenant.dashboard.title,
+    brand: tenant.brand,
+    start,
+    end,
+    generatedAt: new Date().toISOString(),
+    mock,
+    sections,
+  };
+}
+
+async function fetchReportPageSection(
+  tenant: TenantConfig,
+  page: DashboardPage,
+  start: string,
+  end: string,
+): Promise<FullReportPageSection> {
+  try {
+    const result = await fetchPageMetrics(tenant, page.id, start, end);
+    if (result.kind !== "productIndex" || page.kind !== "productIndex") {
+      return { page, result };
+    }
+
+    const models = await Promise.all(
+      result.models.map((model) =>
+        fetchReportModelSection(tenant, page, model.name, start, end),
+      ),
+    );
+    return { page, result, models };
+  } catch (err) {
+    return {
+      page,
+      error: err instanceof Error ? err.message : "Failed to load page data",
+    };
+  }
+}
+
+async function fetchReportModelSection(
+  tenant: TenantConfig,
+  page: ProductIndexPage,
+  model: string,
+  start: string,
+  end: string,
+): Promise<FullReportModelSection> {
+  try {
+    const data = await fetchProductModelMetrics(
+      tenant,
+      page,
+      model,
+      start,
+      end,
+    );
+    return { model, data };
+  } catch (err) {
+    return {
+      model,
+      error: err instanceof Error ? err.message : "Failed to load model data",
+    };
+  }
 }
 
 function mergeEngagement(

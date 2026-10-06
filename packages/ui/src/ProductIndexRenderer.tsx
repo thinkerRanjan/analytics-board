@@ -7,6 +7,8 @@ type ProductIndexRendererProps = {
   models: ProductModel[];
   query?: string;
   valueLabel?: string;
+  /** Typeset list for print/PDF instead of linked cards. */
+  plain?: boolean;
 };
 
 const compact = new Intl.NumberFormat("en", {
@@ -19,12 +21,34 @@ export function ProductIndexRenderer({
   models,
   query,
   valueLabel = "configurator opens",
+  plain = false,
 }: ProductIndexRendererProps) {
   if (models.length === 0) {
     return (
       <div className="surface-dashed flex h-48 items-center justify-center px-6 text-center text-sm text-muted">
         No car models recorded in this range.
       </div>
+    );
+  }
+
+  if (plain) {
+    return (
+      <table className="report-model-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>{valueLabel}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {models.map((model) => (
+            <tr key={model.name}>
+              <td>{model.name}</td>
+              <td>{compact.format(model.value)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     );
   }
 

@@ -2,6 +2,12 @@
   "id": "skoda",
   "name": "Skoda",
   "logo": "/tenants/skoda/logo.png",
+  "brand": {
+    "tagline": "Simply Clever",
+    "coverBackground": "#f6f4ee",
+    "coverForeground": "#1c2b22",
+    "accent": "#4BA82E"
+  },
   "auth": {
     "allowedEmails": [
       "rohit@pragorlabs.com",
@@ -49,7 +55,7 @@
             "id": "kpi-conversions",
             "type": "kpi",
             "metric": "conversions",
-            "label": "Conversions"
+            "label": "Test drive leads"
           },
           {
             "id": "trend-sessions",

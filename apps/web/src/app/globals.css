@@ -609,4 +609,412 @@ body > * {
     background: var(--surface-muted);
     border-radius: 0.5rem;
   }
+
+  /* ---------- Print report brochure ---------- */
+
+  .report-root {
+    --report-cover-bg: #f6f4ee;
+    --report-cover-fg: #1c2b22;
+    --report-accent: #4ba82e;
+    color: var(--foreground);
+    background: #ffffff;
+  }
+
+  .export-page {
+    min-height: 100%;
+    background: #ffffff;
+    color: #1c2b22;
+  }
+
+  html.export-print,
+  html.export-print body {
+    background: #ffffff !important;
+    background-image: none !important;
+  }
+
+  html.export-print body::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  .report-cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 240mm;
+    padding: 2.5rem 3rem 2.25rem;
+    background: var(--report-cover-bg);
+    color: var(--report-cover-fg);
+    border: none;
+    box-shadow: none;
+    break-after: page;
+    page-break-after: always;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .report-cover-eyebrow {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--report-cover-fg) 55%, transparent);
+  }
+
+  .report-cover-logo {
+    display: block;
+    margin-top: 1.75rem;
+    height: 1.75rem;
+    width: auto;
+    max-width: 5.5rem;
+    object-fit: contain;
+  }
+
+  .report-cover-rule {
+    margin: 1.35rem 0 1.15rem;
+    height: 1px;
+    width: 3.25rem;
+    background: var(--report-accent);
+  }
+
+  .report-cover-title {
+    font-size: 2.6rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .report-cover-subtitle {
+    margin-top: 0.55rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--report-cover-fg) 62%, transparent);
+  }
+
+  .report-cover-dashboard {
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--report-cover-fg) 55%, transparent);
+  }
+
+  .report-cover-tagline {
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    font-style: italic;
+    letter-spacing: 0.03em;
+    color: var(--report-accent);
+  }
+
+  .report-cover-meta {
+    display: grid;
+    gap: 0.85rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--report-cover-fg) 12%, transparent);
+  }
+
+  .report-cover-meta-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--report-cover-fg) 45%, transparent);
+  }
+
+  .report-cover-meta-value {
+    margin-top: 0.15rem;
+    font-size: 0.98rem;
+    font-weight: 500;
+  }
+
+  .report-cover-meta-note {
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--report-cover-fg) 60%, transparent);
+  }
+
+  .report-cover-credit {
+    margin-top: 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .report-cover-footer {
+    margin-top: 0.2rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--report-cover-fg) 42%, transparent);
+  }
+
+  .report-toc {
+    min-height: 260mm;
+    padding: 2.5rem 3rem 2rem;
+    background: #ffffff;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .report-kicker {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--report-accent);
+  }
+
+  .report-toc-title {
+    margin-top: 0.4rem;
+    margin-bottom: 1.75rem;
+    font-size: 2.25rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+  }
+
+  .report-toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .report-toc-item {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .report-toc-row {
+    display: grid;
+    grid-template-columns: 2.6rem 1fr;
+    gap: 0.85rem;
+    align-items: start;
+  }
+
+  .report-toc-num {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    font-weight: 650;
+    color: var(--report-accent);
+    padding-top: 0.15rem;
+  }
+
+  .report-toc-heading {
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .report-toc-desc {
+    margin-top: 0.2rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    max-width: 38rem;
+  }
+
+  .report-toc-sub {
+    margin: 0.45rem 0 0 3.45rem;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.1rem;
+    font-size: 0.78rem;
+    color: var(--foreground-soft);
+  }
+
+  .report-section {
+    padding: 1.75rem 3rem 2.25rem;
+    background: #ffffff;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .report-chapter-head {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--report-accent);
+  }
+
+  .report-chapter-mark {
+    display: block;
+    height: 1.75rem;
+    width: auto;
+    margin-bottom: 0.85rem;
+    object-fit: contain;
+  }
+
+  .report-chapter-title {
+    margin-top: 0.25rem;
+    font-size: 1.85rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+  }
+
+  .report-chapter-desc {
+    margin-top: 0.4rem;
+    max-width: 40rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .report-chapter-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .report-subsection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    break-inside: avoid;
+  }
+
+  .report-subsection-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .report-running-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .report-model-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .report-model-table th,
+  .report-model-table td {
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .report-model-table th {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .report-model-table td:last-child,
+  .report-model-table th:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 18mm 16mm 20mm;
+  }
+
+  nextjs-portal {
+    display: none !important;
+  }
+
+  .export-toolbar,
+  .shell-topbar,
+  .shell-subbar,
+  .drawer-peg,
+  .shell-drawer-overlay,
+  .shell-drawer-panel,
+  .report-print-hide {
+    display: none !important;
+  }
+
+  html,
+  html[data-theme="dark"],
+  body,
+  html[data-theme="dark"] body {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #18181b !important;
+    margin: 0 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Dark-theme glow is position:fixed and paints into the page margin,
+     which reads as a thick black frame around the report. */
+  body::before {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+  }
+
+  .report-cover,
+  .report-toc,
+  .report-section {
+    margin: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .report-cover {
+    break-after: page;
+    page-break-after: always;
+    width: auto;
+    min-height: 0;
+    height: auto;
+    margin: 0;
+    padding: 8mm 4mm 12mm;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .report-toc {
+    break-after: page;
+    page-break-after: always;
+    min-height: auto;
+    padding: 10mm 8mm 14mm;
+  }
+
+  .report-section {
+    break-after: page;
+    page-break-after: always;
+    padding: 10mm 8mm 16mm;
+  }
+
+  .report-section:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .report-chapter-body {
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .report-subsection,
+  .surface-card,
+  .kpi-card {
+    break-inside: avoid;
+  }
+
+  .report-section [data-chart],
+  .report-section .recharts-wrapper {
+    min-height: 200px !important;
+    max-width: 100%;
+  }
 }
